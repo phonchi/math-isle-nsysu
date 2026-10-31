@@ -1,0 +1,1272 @@
+<!DOCTYPE html>
+<!-- 產物：由 tools/build_site.py 產生，不要手改。文案在 tools/site_meta.py，樣式與程式在 tools/template/ -->
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="用五座島認識中山大學南部高中數學人才培育班：兩年路徑、課程、晉級原則與學習資源，還能動手玩幾個數學小實驗。">
+<title>猜想群島｜中山大學南部高中數學人才培育班導覽</title>
+<script>
+/* 有 WebGL 才先排 3D 版面。若模組腳本完全無法執行，12 秒後由這裡退回 2D；資訊本身一直可讀。 */
+if (window.WebGLRenderingContext) {
+  document.documentElement.classList.add('gl-pending');
+  setTimeout(function () { document.documentElement.classList.remove('gl-pending'); }, 12000);
+}
+</script>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@900&display=swap&text=%E7%8C%9C%E6%83%B3%E7%BE%A4%E5%B3%B6%E8%A8%88%E7%95%AB%E5%B3%B6%E5%88%9D%E7%B4%9A%E4%B8%AD%E9%AB%98%E8%B3%87%E6%BA%90%E6%B8%AF" rel="stylesheet" media="print" onload="this.media='all'">
+<style>
+/* 猜想群島。預設版面是可讀完全部內容的 2D 列表；html.gl-pending 或 body.webgl-ready 才切成 3D＋資訊欄。
+   色票沿用知識群島：墨 #1a1a2e、米白 #f7f3eb、深藍 #2c3e7a、磚紅 #c0392b、金 #f5b82e。 */
+:root{
+  --bar-h:60px;--r:8px;
+  --sans:system-ui,-apple-system,'PingFang TC','Microsoft JhengHei','Noto Sans CJK TC','Noto Sans TC','Heiti TC',sans-serif;
+  --mono:ui-monospace,'SFMono-Regular','Cascadia Mono',Menlo,Consolas,monospace;
+  --bg:#f7f3eb;--surface:#fffdf7;--surface2:#f1ebdd;--line:#e0d9ca;--line2:#a9a292;
+  --fg:#1a1a2e;--fg2:#3d3a4a;--fg3:#6f6a5f;--accent:#2c3e7a;--on-accent:#fffdf7;--red:#c0392b;--ok:#1a6b4a;--gold:#f5b82e;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html,body{background:var(--bg);}
+body{font-family:var(--sans);color:var(--fg);line-height:1.75;font-size:16px;-webkit-font-smoothing:antialiased;}
+button{font:inherit;color:inherit;}
+a{color:var(--accent);}
+:focus-visible{outline:2px solid var(--red);outline-offset:2px;}
+
+/* 頂列 */
+.isl-bar{position:sticky;top:0;z-index:30;min-height:var(--bar-h);display:flex;align-items:center;gap:1rem;padding:.45rem 1.1rem;color:#fff;
+  background:linear-gradient(100deg,#1a1a2e 0%,#2c3e7a 70%,#2d5a8a 100%);}
+.isl-brand{flex:1;min-width:0;}
+.isl-brand h1{font-family:'Noto Serif TC',var(--sans);font-weight:900;font-size:1.28rem;letter-spacing:.08em;line-height:1.25;}
+.isl-brand-sub{display:block;font-size:.74rem;color:rgba(255,255,255,.78);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.isl-actions{display:flex;gap:.45rem;flex:none;}
+.isl-btn{display:inline-flex;align-items:center;min-height:36px;background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.4);border-radius:var(--r);padding:.2rem .75rem;font-size:.86rem;text-decoration:none;cursor:pointer;white-space:nowrap;}
+.isl-btn[hidden]{display:none;}
+.isl-btn:hover{background:rgba(255,255,255,.2);}
+.isl-btn.is-strong{background:var(--gold);border-color:var(--gold);color:#1a1a2e;font-weight:700;}
+.isl-btn.is-strong:hover{background:#ffc848;}
+
+/* 資訊列表（2D 預設） */
+.isl-list{position:relative;max-width:820px;margin:0 auto;padding:1.2rem 1rem 3rem;}
+.isl-intro{margin-bottom:1rem;}
+.isl-intro p:first-child{font-size:1.04rem;font-weight:600;text-wrap:pretty;}
+.isl-date{font-size:.78rem;color:var(--fg3);margin-top:.25rem;text-wrap:pretty;}
+.isle{padding:1.05rem 1.1rem 1.1rem;margin-bottom:1rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);transition:border-color .25s,box-shadow .25s;}
+.isle.is-current{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
+.isle-head{display:flex;gap:.7rem;align-items:center;}
+.isle-num{flex:none;display:grid;place-items:center;width:2.1rem;height:2.1rem;border-radius:50%;font:700 .95rem/1 var(--mono);color:var(--on-accent);background:var(--accent);}
+.isle h2{font-family:'Noto Serif TC',var(--sans);font-size:1.35rem;font-weight:900;line-height:1.3;}
+.isle-period{font-size:.8rem;color:var(--accent);line-height:1.5;text-wrap:pretty;}
+.isle-lead{margin:.65rem 0 .55rem;font-size:.97rem;text-wrap:pretty;}
+.isle-facts>div{display:grid;grid-template-columns:5.6em 1fr;gap:.6rem;padding:.42rem 0;border-top:1px solid var(--line);}
+.isle-facts dt{font-weight:700;font-size:.86rem;}
+.isle-facts dd{font-size:.92rem;line-height:1.65;color:var(--fg2);text-wrap:pretty;}
+.isle-facts ul{list-style:none;}
+.isle-facts li+li{margin-top:.1rem;}
+.isle-links{list-style:none;display:flex;flex-wrap:wrap;gap:.2rem .9rem;margin-top:.7rem;font-size:.88rem;}
+.isl-foot{font-size:.78rem;color:var(--fg3);padding:.3rem .2rem;text-wrap:pretty;}
+
+/* 小互動 */
+.act{margin-top:.75rem;padding:.8rem .85rem .9rem;background:var(--surface2);border-radius:var(--r);}
+.act h3{font-size:1rem;line-height:1.45;}
+.act-kicker{display:block;font-size:.72rem;font-weight:700;letter-spacing:.08em;color:var(--red);}
+.act-hint{display:flex;align-items:center;gap:.45rem;margin:.3rem 0 .55rem;font-size:.84rem;line-height:1.5;color:var(--fg2);text-wrap:pretty;}
+.monkey{flex:none;width:30px;height:30px;}
+.act-body{font-size:.92rem;}
+.act-body p{text-wrap:pretty;}
+.act-row{display:flex;flex-wrap:wrap;gap:.4rem;align-items:center;margin-top:.5rem;}
+.act-btn{min-height:44px;padding:.3rem .95rem;border-radius:var(--r);border:1px solid var(--line2);background:var(--surface);cursor:pointer;font-weight:700;font-size:.9rem;}
+.act-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent);}
+.act-btn:disabled{cursor:default;opacity:.65;}
+.act-btn.is-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
+.act-btn.is-primary:hover{color:var(--on-accent);filter:brightness(1.12);}
+.act-btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
+.act-q{font-weight:700;line-height:1.6;}
+.act-why{margin-top:.5rem;padding-top:.45rem;border-top:1px solid var(--line2);line-height:1.65;color:var(--fg2);}
+.act-why b{color:var(--fg);}
+.act-eq{font:700 1rem/1.5 var(--mono);overflow-wrap:anywhere;}
+.dots-svg{display:block;width:min(200px,60%);height:auto;margin:.1rem 0 .4rem;}
+.dots-svg circle{transition:fill .2s;}
+.act input[type=range]{width:100%;height:44px;accent-color:var(--accent);}
+.solid-canvas{display:block;width:min(230px,70%);aspect-ratio:1;margin:.1rem auto .3rem;touch-action:pan-y;cursor:grab;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);}
+.solid-canvas:active{cursor:grabbing;}
+.solid-table{width:100%;border-collapse:collapse;margin-top:.5rem;font-size:.84rem;}
+.solid-table th,.solid-table td{padding:.12rem .2rem;border-top:1px solid var(--line2);text-align:center;font-weight:400;}
+.solid-table thead th{font-weight:700;border-top:none;}
+.solid-table tbody th{text-align:left;}
+.solid-table tr.is-on{font-weight:700;color:var(--accent);}
+.solid-table tr.is-on th{font-weight:700;}
+
+/* 3D 模式 */
+.isl-stage{position:relative;overflow:hidden;}
+.gl-pending .isl-stage[hidden]{display:block;}
+.isl-loading{display:none;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:max-content;max-width:85%;text-align:center;font-size:.9rem;letter-spacing:.06em;color:#2b3a36;animation:islPulse 1.4s ease-in-out infinite;}
+.gl-pending .isl-loading{display:block;}
+@keyframes islPulse{0%,100%{opacity:.5;}50%{opacity:1;}}
+#islCanvas{display:block;width:100%;height:100%;touch-action:none;cursor:grab;outline:none;opacity:1;transition:opacity .4s;}
+#islCanvas:active{cursor:grabbing;}
+#islCanvas.is-hover{cursor:pointer;}
+#islCanvas:focus-visible{box-shadow:inset 0 0 0 2px var(--accent);}
+.gl-pending #islCanvas{opacity:0;}
+:is(.gl-pending body,body.webgl-ready) .isl-main{display:grid;grid-template-columns:minmax(0,1fr) 440px;height:calc(100vh - var(--bar-h));height:calc(100dvh - var(--bar-h));}
+:is(.gl-pending body,body.webgl-ready) .isl-stage{display:block;min-height:0;background:#a2dbe6;}
+:is(.gl-pending body,body.webgl-ready) .isl-list{max-width:none;margin:0;padding:.9rem .85rem 2rem;overflow-y:auto;min-height:0;background:var(--bg);border-left:1px solid var(--line);}
+.isl-jumps{position:absolute;z-index:3;left:.8rem;top:.8rem;display:flex;flex-wrap:wrap;gap:.35rem;max-width:calc(100% - 1.6rem);}
+.isl-jump-btn{min-height:36px;background:var(--surface);border:1px solid var(--line2);border-radius:var(--r);padding:.15rem .7rem;font-size:.84rem;cursor:pointer;}
+.isl-jump-btn:hover{border-color:var(--accent);color:var(--accent);}
+.isl-jump-btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent);font-weight:700;}
+.isl-drag{position:absolute;right:.9rem;bottom:.5rem;font-size:.76rem;color:#2b3a36;pointer-events:none;}
+.isl-labels{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.isl-tag{position:absolute;left:0;top:0;display:inline-flex;align-items:stretch;white-space:nowrap;pointer-events:auto;cursor:pointer;overflow:hidden;
+  font:700 .84rem/1.2 var(--sans);color:var(--fg);background:var(--surface);border:1px solid var(--line2);border-radius:var(--r);box-shadow:0 2px 8px rgba(33,52,58,.22);will-change:transform;}
+.isl-tag-num{display:grid;place-items:center;min-width:1.65rem;font:700 .76rem/1 var(--mono);color:var(--on-accent);background:var(--accent);}
+.isl-tag-t{padding:.3rem .55rem;}
+.isl-tag small{display:block;font-weight:500;font-size:.68rem;color:var(--fg3);margin-top:.1rem;}
+.isl-tag:hover,.isl-tag.is-hover{border-color:var(--accent);}
+.isl-tag.is-current{border-color:var(--red);box-shadow:0 0 0 1px var(--red);z-index:2;}
+.isl-tag.is-off{opacity:0;pointer-events:none;}
+.isl-back{position:fixed;z-index:35;right:.8rem;bottom:calc(.8rem + env(safe-area-inset-bottom));min-height:44px;padding:.3rem .95rem;border-radius:var(--r);border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);font-weight:700;font-size:.88rem;cursor:pointer;box-shadow:0 4px 14px rgba(26,26,46,.3);}
+.isl-back[hidden]{display:none;}
+
+/* 手機 */
+@media (max-width:767px){
+  :root{--bar-h:56px;}
+  .isl-bar{padding:.35rem .7rem;gap:.5rem;}
+  .isl-brand h1{font-size:1.06rem;}
+  .isl-brand-sub{font-size:.64rem;}
+  .isl-actions{gap:.3rem;}
+  .isl-btn{padding:.15rem .55rem;font-size:.8rem;}
+  .isl-list{padding:.9rem 16px 2.6rem;}
+  .isle{padding:.9rem .85rem 1rem;}
+  .isle-facts>div{grid-template-columns:1fr;gap:0;}
+  :is(.gl-pending body,body.webgl-ready) .isl-main{display:block;height:auto;}
+  :is(.gl-pending body,body.webgl-ready) .isl-stage{height:50vh;height:50svh;}
+  :is(.gl-pending body,body.webgl-ready) .isl-list{padding:.9rem 16px 4.5rem;border-left:none;overflow:visible;}
+  .isl-jumps{left:.5rem;top:.5rem;gap:.25rem;}
+  .isl-jump-btn{font-size:.76rem;padding:.1rem .5rem;min-height:34px;}
+  .isl-drag{right:.5rem;bottom:.35rem;font-size:.7rem;}
+  .isl-tag{font-size:.74rem;}
+  .isl-tag small{display:none;}
+  .isl-tag-t{padding:.22rem .42rem;}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important;}
+}
+</style>
+<script type="importmap">
+{
+ "imports": {
+  "three": "./vendor/three/three.module.min.js?v=999c08c636",
+  "./vendor/three/three.core.js": "./vendor/three/three.core.min.js?v=999c08c636",
+  "three/addons/controls/OrbitControls.js": "./vendor/three/OrbitControls.js?v=999c08c636",
+  "three/addons/geometries/RoundedBoxGeometry.js": "./vendor/three/RoundedBoxGeometry.js?v=999c08c636"
+ }
+}
+</script>
+</head>
+<body>
+<header class="isl-bar">
+  <div class="isl-brand">
+    <h1>猜想群島</h1>
+    <span class="isl-brand-sub">中山大學南部高中數學人才培育班導覽</span>
+  </div>
+  <div class="isl-actions">
+    <a class="isl-btn is-strong" href="parents.html">給家長</a>
+    <a class="isl-btn" href="https://highschool-math.nsysu.edu.tw/index.php" target="_blank" rel="noopener">官網</a>
+    <button type="button" class="isl-btn" id="islReset" hidden>全景</button>
+  </div>
+</header>
+<main class="isl-main">
+  <div class="isl-stage" id="islStage" hidden>
+    <p class="isl-loading" aria-hidden="true">群島載入中，下方資訊可以先看</p>
+    <canvas id="islCanvas" tabindex="0" aria-label="3D 群島地圖：拖曳旋轉、滾輪或雙指縮放、點選島嶼。所有內容也可在島嶼列表閱讀。"></canvas>
+    <div class="isl-jumps" role="group" aria-label="跳到島嶼">
+      <button type="button" class="isl-jump-btn" data-isle="plan">計畫島</button>
+      <button type="button" class="isl-jump-btn" data-isle="junior">初級島</button>
+      <button type="button" class="isl-jump-btn" data-isle="middle">中級島</button>
+      <button type="button" class="isl-jump-btn" data-isle="senior">高級島</button>
+      <button type="button" class="isl-jump-btn" data-isle="harbor">資源港</button>
+    </div>
+    <div class="isl-labels" id="islLabels"></div>
+    <p class="isl-drag" aria-hidden="true">拖曳旋轉 · 點島看介紹</p>
+  </div>
+  <nav class="isl-list" id="islList" aria-label="島嶼列表">
+    <div class="isl-intro">
+      <p>五座島，兩年路徑。點一座島，就能看課程、時程和資源，也能順手玩一個小實驗。</p>
+      <p class="isl-date">115 學年度資料，2026 年 10 月整理。本站是導覽頁，不取代正式公告。招生、課表、師資與獎項資訊請以計畫官網與學校公告為準。</p>
+    </div>
+    <section class="isle" id="isle-plan" data-isle="plan" aria-labelledby="h-plan">
+      <header class="isle-head">
+        <span class="isle-num">1</span>
+        <div><h2 id="h-plan">計畫島</h2><p class="isle-period">先認識這個計畫</p></div>
+      </header>
+      <p class="isle-lead">南部高中學生數學科學研究人才培育計畫由中山大學應用數學系辦理，以兩年課程輔導對數學有興趣的高中生，認識數學、統計與計算領域。</p>
+      <dl class="isle-facts">
+        <div><dt>核心想法</dt><dd>數學是一種思考的方式：演繹與歸納的推理。訓練的重點是發現問題、解決問題。</dd></div>
+        <div><dt>培養什麼</dt><dd><ul><li>紮實基礎：抽象化、快速計算、公理證明</li><li>思維策略：邏輯、歸納整合、探索與發現</li><li>軟實力：多元解題、創造力、表達溝通、團隊合作</li></ul></dd></div>
+        <div><dt>未來方向</dt><dd>目標是激發研究潛力與創造力，並不限制學生以後只能走數學。</dd></div>
+        <div><dt>沿革</dt><dd><ul><li>民國 74 年：中山數理資優班成立</li><li>民國 76 年：應數系承辦數學組，10 月迎來第一批 20 位高一學生</li><li>民國 82 年：國科會同意獨立設立數學資優班</li><li>民國 95 年：國科會停止補助，由教育部接手</li></ul></dd></div>
+      </dl>
+      <div class="act" data-activity="dots">
+        <h3><span class="act-kicker">猜想燈塔</span>奇數加起來，為什麼是平方？</h3>
+        <p class="act-hint"><svg class="monkey" viewBox="0 0 48 48" aria-hidden="true"><circle cx="9" cy="24" r="6" fill="#d29b73"/><circle cx="39" cy="24" r="6" fill="#d29b73"/><circle cx="24" cy="24" r="17" fill="#8d6a4f"/><ellipse cx="24" cy="29" rx="11" ry="9" fill="#e9b794"/><ellipse cx="18" cy="21" rx="6" ry="5.5" fill="#e9b794"/><ellipse cx="30" cy="21" rx="6" ry="5.5" fill="#e9b794"/><circle cx="18" cy="22" r="2" fill="#2b2420"/><circle cx="30" cy="22" r="2" fill="#2b2420"/><path d="M20 31 Q24 34 28 31" stroke="#7c4a33" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg><span>先別急著背公式。看到規律時，再多問一句：為什麼？</span></p>
+        <div class="act-body"><p>1 + 3 + 5 + … + (2n−1) = n²。在 n×n 的點陣外圍補上一圈 L 形，就得到 (n+1)×(n+1)。</p></div>
+      </div>
+      <ul class="isle-links"><li><a href="https://highschool-math.nsysu.edu.tw/p/412-1186-123.php?Lang=zh-tw" target="_blank" rel="noopener">計畫簡介與沿革</a></li><li><a href="https://highschool-math.nsysu.edu.tw/p/412-1186-23602.php?Lang=zh-tw" target="_blank" rel="noopener">計畫願景</a></li><li><a href="https://highschool-math.nsysu.edu.tw/index.php" target="_blank" rel="noopener">計畫官網</a></li></ul>
+    </section>
+    <section class="isle" id="isle-junior" data-isle="junior" aria-labelledby="h-junior">
+      <header class="isle-head">
+        <span class="isle-num">2</span>
+        <div><h2 id="h-junior">初級島</h2><p class="isle-period">高一上、下學期 · 115 年 11 月至 116 年 6 月</p></div>
+      </header>
+      <p class="isle-lead">第一階段練習把話說精確，熟悉不同的數學對象與推理方法。</p>
+      <dl class="isle-facts">
+        <div><dt>高一上學期</dt><dd><ul><li>集合與邏輯</li><li>離散數學</li></ul></dd></div>
+        <div><dt>高一下學期</dt><dd><ul><li>基礎數學</li><li>初等數論</li></ul></dd></div>
+        <div><dt>上課時間</dt><dd>大多在週日，約兩週一次，以實際課表為準。</dd></div>
+        <div><dt>下一階段</dt><dd>116 年 6 月依單元測驗與數學競試總成績決定晉級，出席率與演習課為輔。</dd></div>
+      </dl>
+      <div class="act" data-activity="claims">
+        <h3><span class="act-kicker">反例水門</span>這句話永遠成立嗎？</h3>
+        <p class="act-hint"><svg class="monkey" viewBox="0 0 48 48" aria-hidden="true"><circle cx="9" cy="24" r="6" fill="#d29b73"/><circle cx="39" cy="24" r="6" fill="#d29b73"/><circle cx="24" cy="24" r="17" fill="#8d6a4f"/><ellipse cx="24" cy="29" rx="11" ry="9" fill="#e9b794"/><ellipse cx="18" cy="21" rx="6" ry="5.5" fill="#e9b794"/><ellipse cx="30" cy="21" rx="6" ry="5.5" fill="#e9b794"/><circle cx="18" cy="22" r="2" fill="#2b2420"/><circle cx="30" cy="22" r="2" fill="#2b2420"/><path d="M20 31 Q24 34 28 31" stroke="#7c4a33" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg><span>一個反例，就足以推翻「永遠成立」。</span></p>
+        <div class="act-body"><p>例：n² + n + 41 在 n = 1 到 39 都是質數，但 n = 40 時等於 41²。試過很多次，仍然不等於證明。</p></div>
+      </div>
+      <ul class="isle-links"><li><a href="https://highschool-math.nsysu.edu.tw/index.php" target="_blank" rel="noopener">計畫官網</a></li></ul>
+    </section>
+    <section class="isle" id="isle-middle" data-isle="middle" aria-labelledby="h-middle">
+      <header class="isle-head">
+        <span class="isle-num">3</span>
+        <div><h2 id="h-middle">中級島</h2><p class="isle-period">高一升高二暑假、高二上學期 · 116 年 7 月至 117 年 1 月</p></div>
+      </header>
+      <p class="isle-lead">課程加入機率統計與程式設計，再進入函數論與方程式論，用計算工具輔助思考。</p>
+      <dl class="isle-facts">
+        <div><dt>暑期</dt><dd><ul><li>機率統計</li><li>程式設計（Python 或 C++，以實際安排為準）</li></ul></dd></div>
+        <div><dt>高二上學期</dt><dd><ul><li>函數論</li><li>方程式論</li></ul></dd></div>
+        <div><dt>下一階段</dt><dd>117 年 1 月決定晉級高級班名單。晉級中級班後可申請初級班修業證明。</dd></div>
+      </dl>
+      <div class="act" data-activity="primes">
+        <h3><span class="act-kicker">質因數碼頭</span>n! 裡有幾個因數 2？</h3>
+        <p class="act-hint"><svg class="monkey" viewBox="0 0 48 48" aria-hidden="true"><circle cx="9" cy="24" r="6" fill="#d29b73"/><circle cx="39" cy="24" r="6" fill="#d29b73"/><circle cx="24" cy="24" r="17" fill="#8d6a4f"/><ellipse cx="24" cy="29" rx="11" ry="9" fill="#e9b794"/><ellipse cx="18" cy="21" rx="6" ry="5.5" fill="#e9b794"/><ellipse cx="30" cy="21" rx="6" ry="5.5" fill="#e9b794"/><circle cx="18" cy="22" r="2" fill="#2b2420"/><circle cx="30" cy="22" r="2" fill="#2b2420"/><path d="M20 31 Q24 34 28 31" stroke="#7c4a33" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg><span>看碼頭上的木箱：第 k 疊的高度，就是 k 含幾個因數 2。</span></p>
+        <div class="act-body"><p>把 ⌊n/2⌋ + ⌊n/4⌋ + ⌊n/8⌋ + … 加起來即可。例如 100! 含 50 + 25 + 12 + 6 + 3 + 1 = 97 個因數 2。</p></div>
+      </div>
+      <ul class="isle-links"><li><a href="https://highschool-math.nsysu.edu.tw/index.php" target="_blank" rel="noopener">計畫官網</a></li></ul>
+    </section>
+    <section class="isle" id="isle-senior" data-isle="senior" aria-labelledby="h-senior">
+      <header class="isle-head">
+        <span class="isle-num">4</span>
+        <div><h2 id="h-senior">高級島</h2><p class="isle-period">高二下學期、高二升高三暑假 · 117 年 2 月至 9 月</p></div>
+      </header>
+      <p class="isle-lead">銜接大學數學，並用數學軟體處理幾何與多變數問題。</p>
+      <dl class="isle-facts">
+        <div><dt>高二下學期</dt><dd><ul><li>微積分</li><li>不等式</li></ul></dd></div>
+        <div><dt>暑期</dt><dd><ul><li>解析幾何</li><li>數學軟體 SageMath</li><li>銜接教學：向量函數、多變數函數</li></ul></dd></div>
+        <div><dt>結業</dt><dd>預計 117 年 9 月中旬結業。晉級高級班可申請通過必修課程之結業證書，通過高級班則頒予通過必、選修課程之結業證書。</dd></div>
+      </dl>
+      <div class="act" data-activity="solids">
+        <h3><span class="act-kicker">多面體觀測站</span>轉動正多面體，算 V − E + F</h3>
+        <p class="act-hint"><svg class="monkey" viewBox="0 0 48 48" aria-hidden="true"><circle cx="9" cy="24" r="6" fill="#d29b73"/><circle cx="39" cy="24" r="6" fill="#d29b73"/><circle cx="24" cy="24" r="17" fill="#8d6a4f"/><ellipse cx="24" cy="29" rx="11" ry="9" fill="#e9b794"/><ellipse cx="18" cy="21" rx="6" ry="5.5" fill="#e9b794"/><ellipse cx="30" cy="21" rx="6" ry="5.5" fill="#e9b794"/><circle cx="18" cy="22" r="2" fill="#2b2420"/><circle cx="30" cy="22" r="2" fill="#2b2420"/><path d="M20 31 Q24 34 28 31" stroke="#7c4a33" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg><span>把正多面體轉一轉，看看 V − E + F 會不會變。</span></p>
+        <div class="act-body"><p>五種正多面體的頂點、邊、面數分別是：正四面體 4、6、4；正六面體 8、12、6；正八面體 6、12、8；正十二面體 20、30、12；正二十面體 12、30、20。每一種的 V − E + F 都等於 2。</p></div>
+      </div>
+      <ul class="isle-links"><li><a href="https://highschool-math.nsysu.edu.tw/index.php" target="_blank" rel="noopener">計畫官網</a></li></ul>
+    </section>
+    <section class="isle" id="isle-harbor" data-isle="harbor" aria-labelledby="h-harbor">
+      <header class="isle-head">
+        <span class="isle-num">5</span>
+        <div><h2 id="h-harbor">資源港</h2><p class="isle-period">課程之外可以用的資源</p></div>
+      </header>
+      <p class="isle-lead">除了基礎課程，還有演習課、專題演講、專題研究、數學競試與雙週一題。</p>
+      <dl class="isle-facts">
+        <div><dt>學習活動</dt><dd><ul><li>演習課與專題演講</li><li>暑期程式與軟體課程</li><li>專題研究與數學競試</li><li>雙週一題</li></ul></dd></div>
+        <div><dt>協助與交流</dt><dd><ul><li>老師與助教諮詢服務</li><li>優秀學員心得交流、畢業生返校活動</li><li>初等數學書籍借閱（配合上課日 9:00–16:00）</li></ul></dd></div>
+        <div><dt>升學相關</dt><dd>部分大學特殊選才的申請門檻之一，是修習過教育部的科學研究人才培育計畫。各校條件不同，修習本計畫不等於錄取，請以各校簡章為準。</dd></div>
+        <div><dt>獎學金</dt><dd>成績優異的學員進入中山應數系就讀，可申請校內獎學金，條件以學校公告為準。</dd></div>
+        <div><dt>遇到颱風</dt><dd>高雄市公告全市當天或半天停止上課時，該次課程順延補課。</dd></div>
+        <div><dt>交通</dt><dd><ul><li>捷運：哈瑪星站 2 號出口，轉公車橘 1 至行政大樓</li><li>公車：248 路（高雄車站）、50 路（文化中心）到學校隧道口</li><li>上課地點：中山大學理學院，以課表公告為準</li></ul></dd></div>
+        <div><dt>聯絡</dt><dd>應用數學系 07-525-2000 分機 3802；高雄市鼓山區蓮海路 70 號</dd></div>
+      </dl>
+      <div class="act" data-activity="puzzles">
+        <h3><span class="act-kicker">補給港</span>隨手一題</h3>
+        <p class="act-hint"><svg class="monkey" viewBox="0 0 48 48" aria-hidden="true"><circle cx="9" cy="24" r="6" fill="#d29b73"/><circle cx="39" cy="24" r="6" fill="#d29b73"/><circle cx="24" cy="24" r="17" fill="#8d6a4f"/><ellipse cx="24" cy="29" rx="11" ry="9" fill="#e9b794"/><ellipse cx="18" cy="21" rx="6" ry="5.5" fill="#e9b794"/><ellipse cx="30" cy="21" rx="6" ry="5.5" fill="#e9b794"/><circle cx="18" cy="22" r="2" fill="#2b2420"/><circle cx="30" cy="22" r="2" fill="#2b2420"/><path d="M20 31 Q24 34 28 31" stroke="#7c4a33" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg><span>卡住時別一個人硬撐，老師和助教都可以問。</span></p>
+        <div class="act-body"><p>試試看：任選 13 個人，一定有兩人同月出生嗎？答案是一定有，因為 12 個月裝不下 13 個人（鴿籠原理）。</p></div>
+      </div>
+      <ul class="isle-links"><li><a href="https://highschool-math.nsysu.edu.tw/index.php" target="_blank" rel="noopener">計畫官網</a></li><li><a href="http://www-math.nsysu.edu.tw/~problem/" target="_blank" rel="noopener">雙週一題</a></li><li><a href="https://highschool-math.nsysu.edu.tw/p/412-1186-24656.php?Lang=zh-tw" target="_blank" rel="noopener">歷年考題（PDF）</a></li><li><a href="https://www.nsysu.edu.tw/p/412-1000-1503.php?Lang=zh-tw" target="_blank" rel="noopener">中山校園地圖</a></li><li><a href="https://www.nsysu.edu.tw/p/412-1000-4132.php?Lang=zh-tw" target="_blank" rel="noopener">如何到達中山大學</a></li><li><a href="https://hs.nsysu.edu.tw/" target="_blank" rel="noopener">中山大學高中生專區</a></li><li><a href="https://phonchi.github.io/nsysu-campus/" target="_blank" rel="noopener">走進 3D 校園（檔案較大，建議用電腦）</a></li></ul>
+    </section>
+    <footer class="isl-foot">
+      <p>中山大學應用數學系人才培育班導覽。115 學年度資料，2026 年 10 月整理。</p>
+      <p>本站是導覽頁，不取代正式公告。招生、課表、師資與獎項資訊請以計畫官網與學校公告為準。</p>
+    </footer>
+  </nav>
+</main>
+<button type="button" class="isl-back" id="islBack" hidden>回到地圖</button>
+<script type="application/json" id="island-data">
+{
+ "isles": [
+  {
+   "key": "plan",
+   "code": "1",
+   "name": "計畫島",
+   "landmark": "猜想燈塔"
+  },
+  {
+   "key": "junior",
+   "code": "2",
+   "name": "初級島",
+   "landmark": "反例水門"
+  },
+  {
+   "key": "middle",
+   "code": "3",
+   "name": "中級島",
+   "landmark": "質因數碼頭"
+  },
+  {
+   "key": "senior",
+   "code": "4",
+   "name": "高級島",
+   "landmark": "多面體觀測站"
+  },
+  {
+   "key": "harbor",
+   "code": "5",
+   "name": "資源港",
+   "landmark": "補給港"
+  }
+ ],
+ "claims": [
+  {
+   "q": "對所有正整數 n，n² + n + 41 都是質數。",
+   "answer": false,
+   "why": "n = 1 到 39 都是質數，看起來很可靠。但 n = 40 時，40² + 40 + 41 = 1681 = 41²。試過很多次仍不等於證明。"
+  },
+  {
+   "q": "對任意集合 A、B、C：若 A ⊆ B 且 B ⊆ C，則 A ⊆ C。",
+   "answer": true,
+   "why": "任取 A 裡的元素，因為 A ⊆ B，它在 B 裡；又因為 B ⊆ C，它也在 C 裡。論證對每個元素都成立，所以不必逐一檢查。"
+  },
+  {
+   "q": "對任意集合 A、B、C：若 A ∪ B = A ∪ C，則 B = C。",
+   "answer": false,
+   "why": "取 A = {1}、B = {1}、C = ∅，兩邊的聯集都是 {1}，但 B ≠ C。聯集不能像數字加法那樣直接「消去」。"
+  }
+ ],
+ "puzzles": [
+  {
+   "q": "1 + 2 + 3 + … + 100 等於多少？",
+   "a": "5050。把首尾配對：1 + 100、2 + 99……共 50 對，每對都是 101。"
+  },
+  {
+   "q": "12 個人兩兩握手一次，總共握幾次手？",
+   "a": "66 次。每人握 11 次，12 × 11 把每次握手算了兩遍，所以再除以 2。"
+  },
+  {
+   "q": "任選 13 個人，一定有兩人同月出生嗎？",
+   "a": "一定有。一年只有 12 個月，13 個人放不進 12 個格子而不重複，這就是鴿籠原理。"
+  },
+  {
+   "q": "三個連續正整數的乘積，一定是 6 的倍數嗎？",
+   "a": "一定是。三個連續整數中至少一個是偶數，也恰有一個是 3 的倍數，所以乘積同時被 2 和 3 整除。"
+  },
+  {
+   "q": "8×8 棋盤去掉對角的兩個角格，能用 1×2 骨牌剛好鋪滿嗎？",
+   "a": "不能。對角兩格同色，去掉後黑白格相差 2 格，而每張骨牌一定蓋住一黑一白。"
+  }
+ ]
+}
+</script>
+<script type="module">
+/* 猜想群島的 UI 層。build_site.py 會依序把本檔、activities.js、island-scene.js inline 進同一個 module。
+ * 資訊和小互動都不需要 Three.js。場景載入失敗、卡住或沒有 WebGL 時，頁面留在 2D 列表，內容一樣可讀可玩。 */
+const DATA = JSON.parse(document.getElementById('island-data').textContent);
+const ISLES = DATA.isles;
+const BY = Object.fromEntries(ISLES.map(i => [i.key, i]));
+const $ = id => document.getElementById(id);
+const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+const sections = new Map(ISLES.map(i => [i.key, $('isle-' + i.key)]));
+const SCENE_TIMEOUT_MS = window.__islandSceneTimeoutMs || 8000;
+let scene = null, current = null, programmaticUntil = 0, abandoned = false;
+
+function listScrolls() {
+  const list = $('islList');
+  return getComputedStyle(list).overflowY === 'auto' && list.scrollHeight > list.clientHeight;
+}
+function scrollToSection(key) {
+  const el = sections.get(key); if (!el) return;
+  const behavior = reduceMotion.matches ? 'auto' : 'smooth';
+  programmaticUntil = performance.now() + 900;
+  if (listScrolls()) $('islList').scrollTo({ top: el.offsetTop - 10, behavior });
+  else {
+    const bar = document.querySelector('.isl-bar').offsetHeight;
+    window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - bar - 8, behavior });
+  }
+}
+function setCurrent(key) {
+  current = key;
+  sections.forEach((el, k) => el.classList.toggle('is-current', k === key));
+  document.querySelectorAll('.isl-jump-btn').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.isle === key)));
+}
+// 點地圖或按鈕：相機飛過去，資訊欄同步捲到該島
+function select(key, { scroll = true, fly = true } = {}) {
+  if (!BY[key]) return;
+  setCurrent(key);
+  if (scene) scene.select(key, fly);
+  if (scroll) scrollToSection(key);
+}
+document.querySelectorAll('.isl-jump-btn').forEach(b => {
+  b.setAttribute('aria-pressed', 'false');
+  b.addEventListener('click', () => select(b.dataset.isle));
+});
+
+// 讀資訊時，地圖跟著標出正在讀的島；桌機上相機也會跟過去
+let spyRaf = 0, spyFly = 0;
+function spy() {
+  spyRaf = 0;
+  if (performance.now() < programmaticUntil) return;
+  const scrolling = listScrolls();
+  const top = scrolling ? $('islList').getBoundingClientRect().top : document.querySelector('.isl-bar').offsetHeight;
+  const line = top + Math.min(220, window.innerHeight * .3);
+  let best = null;
+  sections.forEach((el, k) => { const r = el.getBoundingClientRect(); if (r.top <= line && r.bottom > line) best = k; });
+  if (best && best !== current) {
+    setCurrent(best);
+    if (scene) {
+      scene.select(best, false);
+      if (scrolling) { clearTimeout(spyFly); spyFly = setTimeout(() => { if (scene && current === best) scene.select(best, true); }, 300); }
+    }
+  }
+  updateBack();
+}
+const queueSpy = () => { if (!spyRaf) spyRaf = requestAnimationFrame(spy); };
+$('islList').addEventListener('scroll', queueSpy, { passive: true });
+window.addEventListener('scroll', queueSpy, { passive: true });
+
+// 手機上地圖捲出畫面後，提供回到地圖的按鈕
+function updateBack() {
+  const stage = $('islStage');
+  $('islBack').hidden = !(scene && !listScrolls() && stage.getBoundingClientRect().bottom < 40);
+}
+$('islBack').addEventListener('click', () => {
+  programmaticUntil = performance.now() + 900;
+  window.scrollTo({ top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+});
+
+/* ── 3D 場景（可選）── */
+function hasWebGL() {
+  try {
+    const c = document.createElement('canvas');
+    return !!(window.WebGLRenderingContext && (c.getContext('webgl2') || c.getContext('webgl')));
+  } catch (e) { return false; }
+}
+function fallback2D(reason) {
+  abandoned = true;
+  document.documentElement.classList.remove('gl-pending');
+  document.body.classList.remove('webgl-ready');
+  $('islStage').hidden = true; $('islReset').hidden = true; $('islBack').hidden = true;
+  scene = null;
+  console.info('3D 群島未啟用，改用 2D 列表：' + reason);
+}
+async function loadThree() {
+  const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error('載入逾時')), SCENE_TIMEOUT_MS));
+  return Promise.race([Promise.all([
+    import('three'),
+    import('three/addons/controls/OrbitControls.js'),
+    import('three/addons/geometries/RoundedBoxGeometry.js'),
+  ]), timeout]);
+}
+async function initScene() {
+  const [THREE, { OrbitControls }, { RoundedBoxGeometry }] = await loadThree();
+  if (abandoned) return;
+  const stage = $('islStage'), canvas = $('islCanvas');
+  document.body.classList.add('webgl-ready');
+  stage.hidden = false;
+  let renderer;
+  try {
+    renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'high-performance' });
+  } catch (e) {
+    throw new Error('WebGLRenderer 建立失敗');
+  }
+  scene = buildWorld(THREE, { OrbitControls, RoundedBoxGeometry }, renderer, stage, canvas);
+  $('islReset').hidden = false;
+  $('islReset').addEventListener('click', () => {
+    if (!scene) return;
+    setCurrent(null); scene.select(null, false); scene.reset();
+  });
+  canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); if (scene) scene.dispose(); fallback2D('WebGL context lost'); });
+  window.__island = { screenPos: k => scene && scene.screenPos(k), pickAt: (x, y) => scene && scene.pickAt(x, y), stats: () => scene && scene.stats(), monkey: () => scene && scene.monkey() };
+  if (current) scene.select(current, false);
+  await scene.warm();
+  document.documentElement.classList.remove('gl-pending');
+}
+if (hasWebGL()) initScene().catch(err => fallback2D(err && err.message ? err.message : String(err)));
+else fallback2D('瀏覽器沒有 WebGL');
+
+/* 五個小互動。每個都只有一個主要操作，不計分、不需過關，也不依賴 Three.js。 */
+const el = (tag, props = {}, ...kids) => {
+  const n = Object.assign(document.createElement(tag), props);
+  n.append(...kids);
+  return n;
+};
+const SUP = { 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
+
+const ACTIVITIES = {
+  /* 奇數和：每按一次，外圍多一圈 L */
+  dots(body) {
+    const MAX = 8, GAP = 10, NS = 'http://www.w3.org/2000/svg';
+    let n = 1;
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', `0 0 ${MAX * GAP} ${MAX * GAP}`);
+    svg.setAttribute('class', 'dots-svg');
+    svg.setAttribute('role', 'img');
+    const dots = [];
+    for (let y = 0; y < MAX; y++) for (let x = 0; x < MAX; x++) {
+      const c = document.createElementNS(NS, 'circle');
+      c.setAttribute('cx', x * GAP + GAP / 2); c.setAttribute('cy', (MAX - 1 - y) * GAP + GAP / 2); c.setAttribute('r', 3.4);
+      svg.appendChild(c); dots.push({ c, layer: Math.max(x, y) });
+    }
+    const eq = el('p', { className: 'act-eq' });
+    eq.setAttribute('aria-live', 'polite');
+    const why = el('p', { className: 'act-why', textContent: '點陣說明了原因：每多一圈 L，就把 n×n 的正方形補成 (n+1)×(n+1)。' });
+    const btn = el('button', { type: 'button', className: 'act-btn is-primary' });
+    function draw() {
+      dots.forEach(({ c, layer }) => c.setAttribute('fill', layer >= n ? '#ddd5c4' : layer === n - 1 ? '#c0392b' : layer % 2 ? '#f5b82e' : '#2c3e7a'));
+      const odds = Array.from({ length: n }, (_, i) => 2 * i + 1);
+      eq.textContent = `${odds.join(' + ')} = ${n * n} = ${n}²`;
+      svg.setAttribute('aria-label', `${n} 乘 ${n} 的點陣`);
+      btn.textContent = n < MAX ? `再加一圈（多 ${2 * n + 1} 個點）` : '從頭再來';
+    }
+    btn.addEventListener('click', () => { n = n < MAX ? n + 1 : 1; draw(); });
+    draw();
+    body.replaceChildren(svg, eq, el('div', { className: 'act-row' }, btn), why);
+  },
+
+  /* 判斷真假：答完才看理由 */
+  claims(body) {
+    let i = 0;
+    const q = el('p', { className: 'act-q' }), row = el('div', { className: 'act-row' });
+    const why = el('p', { className: 'act-why', hidden: true });
+    why.setAttribute('aria-live', 'polite');
+    const next = el('button', { type: 'button', className: 'act-btn', textContent: '換一題', hidden: true });
+    function draw() {
+      const c = DATA.claims[i];
+      q.textContent = c.q; why.hidden = true; next.hidden = true;
+      const mk = (label, value) => {
+        const b = el('button', { type: 'button', className: 'act-btn', textContent: label });
+        b.addEventListener('click', () => {
+          [...row.querySelectorAll('button')].forEach(x => { if (x !== next) x.disabled = true; });
+          b.setAttribute('aria-pressed', 'true');
+          why.replaceChildren(el('b', { textContent: value === c.answer ? '猜對了。' : `這句話${c.answer ? '成立' : '不成立'}。` }), ' ' + c.why);
+          why.hidden = false; next.hidden = false;
+        });
+        return b;
+      };
+      row.replaceChildren(mk('永遠成立', true), mk('不一定', false), next);
+    }
+    next.addEventListener('click', () => { i = (i + 1) % DATA.claims.length; draw(); });
+    draw();
+    body.replaceChildren(q, row, why);
+  },
+
+  /* n! 含幾個因數 2：拉滑桿 */
+  primes(body) {
+    const id = 'primes-n';
+    const label = el('label', { htmlFor: id, className: 'act-q' });
+    const range = el('input', { type: 'range', id, min: 1, max: 100, value: 10 });
+    const eq = el('p', { className: 'act-eq' });
+    eq.setAttribute('aria-live', 'polite');
+    const why = el('p', { className: 'act-why', textContent: '偶數各貢獻一個 2，4 的倍數再多一個，8 的倍數再多一個……所以把每一層的倍數個數加起來就好。' });
+    function draw() {
+      const n = +range.value, terms = [];
+      for (let k = 2; k <= n; k *= 2) terms.push(Math.floor(n / k));
+      label.textContent = `n = ${n}`;
+      const total = terms.reduce((a, b) => a + b, 0);
+      eq.textContent = terms.length ? `${n}! 含 ${terms.join(' + ')} = ${total} 個因數 2` : `${n}! 含 0 個因數 2`;
+    }
+    range.addEventListener('input', draw);
+    draw();
+    body.replaceChildren(label, range, eq, why);
+  },
+
+  /* 正多面體：用 Canvas 2D 畫，沒有 WebGL 也能轉 */
+  solids(body) {
+    const P = (1 + Math.sqrt(5)) / 2, Q = 1 / P;
+    const SOLIDS = [
+      ['正四面體', [[1, 1, 1], [1, -1, -1], [-1, 1, -1], [-1, -1, 1]]],
+      ['正六面體', [-1, 1].flatMap(x => [-1, 1].flatMap(y => [-1, 1].map(z => [x, y, z])))],
+      ['正八面體', [[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]]],
+      ['正十二面體', [...[-1, 1].flatMap(x => [-1, 1].flatMap(y => [-1, 1].map(z => [x, y, z]))),
+        ...[-1, 1].flatMap(a => [-1, 1].flatMap(b => [[0, a * Q, b * P], [a * Q, b * P, 0], [a * P, 0, b * Q]]))]],
+      ['正二十面體', [-1, 1].flatMap(a => [-1, 1].flatMap(b => [[0, a, b * P], [a, b * P, 0], [a * P, 0, b]]))],
+    ].map(([name, v]) => ({ name, ...polyhedron(v) }));
+    const canvas = el('canvas', { className: 'solid-canvas', width: 460, height: 460 });
+    canvas.setAttribute('role', 'img');
+    const row = el('div', { className: 'act-row' });
+    const eq = el('p', { className: 'act-eq' });
+    eq.setAttribute('aria-live', 'polite');
+    const table = el('table', { className: 'solid-table' });
+    const trs = SOLIDS.map(s => {
+      const tr = el('tr', {}, el('th', { scope: 'row', textContent: s.name }), ...[s.V, s.E, s.F, s.V - s.E + s.F].map(x => el('td', { textContent: x })));
+      return tr;
+    });
+    table.append(el('thead', {}, el('tr', {}, ...['', 'V', 'E', 'F', 'V−E+F'].map(t => el('th', { scope: 'col', textContent: t })))), el('tbody', {}, ...trs));
+    let cur = 2, rx = .5, ry = .6, drag = null, visible = false, raf = 0, last = 0;
+    const btns = SOLIDS.map((s, i) => {
+      const b = el('button', { type: 'button', className: 'act-btn', textContent: s.name.replace('正', '') });
+      b.addEventListener('click', () => choose(i));
+      return b;
+    });
+    row.append(...btns);
+    function choose(i) {
+      cur = i;
+      const s = SOLIDS[i];
+      btns.forEach((b, j) => b.setAttribute('aria-pressed', String(j === i)));
+      trs.forEach((t, j) => t.classList.toggle('is-on', j === i));
+      eq.textContent = `V − E + F = ${s.V} − ${s.E} + ${s.F} = ${s.V - s.E + s.F}`;
+      canvas.setAttribute('aria-label', `${s.name}，${s.V} 個頂點、${s.E} 條邊、${s.F} 個面`);
+      paint();
+    }
+    function paint() {
+      const g = canvas.getContext('2d'); if (!g) return;
+      const S = SOLIDS[cur], W = canvas.width, c = W / 2, R = W * .37;
+      const cx = Math.cos(rx), sx = Math.sin(rx), cy = Math.cos(ry), sy = Math.sin(ry);
+      const pts = S.verts.map(([x, y, z]) => {
+        const x1 = x * cy + z * sy, z1 = -x * sy + z * cy, y1 = y * cx - z1 * sx, z2 = y * sx + z1 * cx;
+        return [c + x1 * R, c - y1 * R, z2];
+      });
+      g.clearRect(0, 0, W, W);
+      g.lineJoin = 'round';
+      S.faces.map((f, i) => {
+        const n = S.normals[i];
+        const nx = n[0] * cy + n[2] * sy, z1 = -n[0] * sy + n[2] * cy, ny = n[1] * cx - z1 * sx, nz = n[1] * sx + z1 * cx;
+        return { f, nx, ny, nz };
+      }).filter(o => o.nz > 1e-6).forEach(({ f, nx, ny, nz }) => {
+        const lit = Math.max(0, .35 * nx + .45 * ny + .82 * nz);
+        g.beginPath();
+        f.forEach((v, i) => (i ? g.lineTo(pts[v][0], pts[v][1]) : g.moveTo(pts[v][0], pts[v][1])));
+        g.closePath();
+        g.fillStyle = `rgb(${Math.round(70 + 155 * lit)},${Math.round(92 + 120 * lit)},${Math.round(150 + 80 * lit)})`;
+        g.fill(); g.strokeStyle = '#1a1a2e'; g.lineWidth = 3; g.stroke();
+      });
+      pts.filter(p => p[2] > -1e-6).forEach(p => { g.beginPath(); g.arc(p[0], p[1], 7, 0, 7); g.fillStyle = '#f5b82e'; g.fill(); g.strokeStyle = '#1a1a2e'; g.lineWidth = 2; g.stroke(); });
+    }
+    function tick(t) {
+      raf = 0;
+      if (!visible || document.hidden || reduceMotion.matches) return;
+      if (!drag) { ry += Math.min(.05, (t - last) / 1000) * .45; paint(); }
+      last = t; raf = requestAnimationFrame(tick);
+    }
+    const start = () => { if (!raf) { last = performance.now(); raf = requestAnimationFrame(tick); } };
+    canvas.addEventListener('pointerdown', e => { drag = { x: e.clientX, y: e.clientY }; canvas.setPointerCapture(e.pointerId); });
+    canvas.addEventListener('pointermove', e => {
+      if (!drag) return;
+      ry += (e.clientX - drag.x) * .012; rx += (e.clientY - drag.y) * .012; drag = { x: e.clientX, y: e.clientY }; paint();
+    });
+    const stop = () => { drag = null; };
+    canvas.addEventListener('pointerup', stop); canvas.addEventListener('pointercancel', stop);
+    if ('IntersectionObserver' in window) new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) start(); }).observe(canvas);
+    document.addEventListener('visibilitychange', start);
+    body.replaceChildren(canvas, eq, row, table);
+    choose(cur);
+  },
+
+  /* 隨手一題：翻開答案、換一題 */
+  puzzles(body) {
+    const order = DATA.puzzles.map((_, i) => i).sort(() => Math.random() - .5);
+    let k = 0;
+    const q = el('p', { className: 'act-q' }), a = el('p', { className: 'act-why', hidden: true });
+    a.setAttribute('aria-live', 'polite');
+    const show = el('button', { type: 'button', className: 'act-btn is-primary', textContent: '翻開答案' });
+    const next = el('button', { type: 'button', className: 'act-btn', textContent: '換一題' });
+    function draw() { const p = DATA.puzzles[order[k]]; q.textContent = p.q; a.textContent = p.a; a.hidden = true; show.disabled = false; }
+    show.addEventListener('click', () => { a.hidden = false; show.disabled = true; });
+    next.addEventListener('click', () => { k = (k + 1) % order.length; draw(); });
+    draw();
+    body.replaceChildren(q, el('div', { className: 'act-row' }, show, next), a);
+  },
+};
+
+/* 由頂點算出凸多面體的面、邊數：點、邊、面都是算出來的，不是抄表。頂點先正規化到單位球。 */
+function polyhedron(raw) {
+  const len = Math.hypot(...raw[0]);
+  const verts = raw.map(v => v.map(x => x / len)), EPS = 1e-6;
+  const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
+  const dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+  const cross = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const faces = [], normals = [], seen = new Set();
+  for (let i = 0; i < verts.length; i++) for (let j = i + 1; j < verts.length; j++) for (let k = j + 1; k < verts.length; k++) {
+    let n = cross(sub(verts[j], verts[i]), sub(verts[k], verts[i]));
+    const l = Math.hypot(...n); if (l < EPS) continue;
+    n = n.map(x => x / l);
+    const d = dot(n, verts[i]), side = verts.map(v => dot(n, v) - d);
+    if (side.some(s => s > EPS) && side.some(s => s < -EPS)) continue;
+    if (d < 0) n = n.map(x => -x);
+    const on = verts.map((_, m) => m).filter(m => Math.abs(side[m]) < EPS), key = on.join(',');
+    if (seen.has(key)) continue;
+    seen.add(key);
+    const c = on.reduce((s, m) => [s[0] + verts[m][0], s[1] + verts[m][1], s[2] + verts[m][2]], [0, 0, 0]).map(x => x / on.length);
+    const u = sub(verts[on[0]], c), w = cross(n, u);
+    faces.push(on.slice().sort((p, q) => Math.atan2(dot(sub(verts[p], c), w), dot(sub(verts[p], c), u)) - Math.atan2(dot(sub(verts[q], c), w), dot(sub(verts[q], c), u))));
+    normals.push(n);
+  }
+  const edges = new Set();
+  faces.forEach(f => f.forEach((v, i) => { const a = f[(i + 1) % f.length]; edges.add(Math.min(v, a) + '-' + Math.max(v, a)); }));
+  return { verts, faces, normals, V: verts.length, E: edges.size, F: faces.length };
+}
+
+document.querySelectorAll('.act[data-activity]').forEach(box => {
+  const body = box.querySelector('.act-body'), fn = ACTIVITIES[box.dataset.activity];
+  if (body && fn) fn(body);
+});
+
+/* 猜想群島的場景層。由 island.js 的 initScene() 呼叫 buildWorld()。零件工具與島嶼工廠改寫自 ds-cpp-selfstudy 的知識群島。
+ * 全部程序化，沒有模型或圖檔。靜態零件合併成 InstancedMesh，陰影只烘一次；繪製依需要排程，閒置就停。 */
+function buildWorld(THREE, addons, renderer, stage, canvas) {
+  const { OrbitControls, RoundedBoxGeometry } = addons;
+  const motion = () => !reduceMotion.matches;
+  const narrow = () => stage.clientWidth < 768;
+  const rnd = mulberry32(115);
+  const SQ = Math.SQRT1_2;
+  const toWorld = (u, v) => ({ x: (u + v) * SQ, z: (v - u) * SQ });   // 初始視角的螢幕座標 → 世界座標
+  const world = new THREE.Scene();
+  const anims = [];
+  let need = true, raf = 0, onScreen = true, alive = true, dprLevel = 0, tagsDirty = true, draws = 0;
+
+  const C = {
+    grass: '#b4d18a', grass2: '#a3c67e', grass3: '#c4dc9c', sand: '#eedbb0', cliff: '#dcc39a', cliffDark: '#c2a477', foam: '#fbfaf2', shallow: '#bfe0d6',
+    wall: '#f5e6cb', roof: '#b9563f', navy: '#2c3e7a', forest: '#3f7f61', leaf: '#9fb889', leaf2: '#8fae86', leaf3: '#7c9a76', pine: '#7b997c', pine2: '#68876c',
+    wood: '#ab875d', woodDark: '#7a5c3e', stone: '#dacdb6', stoneDark: '#b6a78c', ink: '#4f5a55', gold: '#f5b82e', white: '#fffcf3', red: '#c0392b', fur: '#8d6a4f', skin: '#e9b794',
+  };
+  const BG = '#a2dbe6';
+
+  /* ── Renderer 與光線 ── */
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
+  renderer.shadowMap.autoUpdate = false;
+  renderer.outputColorSpace = THREE.SRGBColorSpace;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  world.background = new THREE.Color(BG);
+  world.add(new THREE.HemisphereLight('#fff4dc', '#7d9d8f', 1.3));
+  const sun = new THREE.DirectionalLight('#ffe4c4', 2.9);
+  sun.position.set(-30, 60, 25); sun.castShadow = true;
+  sun.shadow.mapSize.set(narrow() ? 1024 : 2048, narrow() ? 1024 : 2048);
+  Object.assign(sun.shadow.camera, { left: -50, right: 50, top: 50, bottom: -50, near: 1, far: 160 });
+  sun.shadow.bias = -.0006; sun.shadow.radius = 3;
+  world.add(sun);
+  const fill = new THREE.DirectionalLight('#dbeafe', .45); fill.position.set(30, 25, -20); world.add(fill);
+
+  const std = (color, extra = {}) => new THREE.MeshLambertMaterial({ color, ...extra });
+  const basic = (color, extra) => new THREE.MeshBasicMaterial({ color, ...extra });
+
+  /* ── PartKit：零件 → InstancedMesh ── */
+  const prismGeo = (() => {
+    const tri = new THREE.Shape();
+    tri.moveTo(-.5, -.5); tri.lineTo(.5, -.5); tri.lineTo(0, .5); tri.closePath();
+    const g = new THREE.ExtrudeGeometry(tri, { depth: 1, bevelEnabled: false });
+    g.translate(0, 0, -.5); g.computeVertexNormals(); return g;
+  })();
+  const GEO = {
+    box: new THREE.BoxGeometry(1, 1, 1), round: new RoundedBoxGeometry(1, 1, 1, 1, .14), cyl: new THREE.CylinderGeometry(.5, .5, 1, 12),
+    cone: new THREE.ConeGeometry(.5, 1, 10), sphere: new THREE.SphereGeometry(.5, 12, 8), rock: new THREE.DodecahedronGeometry(.5, 0), prism: prismGeo,
+    torus: new THREE.TorusGeometry(.5, .06, 8, 32), dome: new THREE.SphereGeometry(.5, 16, 8, 0, Math.PI * 2, 0, Math.PI / 2),
+  };
+  const kitMat = std('#ffffff');
+  const glowMat = new THREE.MeshBasicMaterial({ color: '#ffffff' });
+  const parts = [];
+  function part(kind, x, y, z, w, h, d, color, o = {}) {
+    parts.push({ kind, x, y, z, w, h, d, color, rx: o.rx || 0, ry: o.ry || 0, rz: o.rz || 0, glow: !!o.glow });
+  }
+  function at(ox, oy, oz, rot = 0, s = 1) {
+    const c = Math.cos(rot), sn = Math.sin(rot);
+    return (kind, x, y, z, w, h, d, color, o = {}) =>
+      part(kind, ox + (x * c + z * sn) * s, oy + y * s, oz + (-x * sn + z * c) * s, w * s, h * s, d * s, color, { ...o, ry: (o.ry || 0) + rot });
+  }
+  function flushParts() {
+    const groups = new Map();
+    parts.forEach(p => { const k = p.kind + (p.glow ? '|g' : ''); if (!groups.has(k)) groups.set(k, []); groups.get(k).push(p); });
+    const o = new THREE.Object3D(); o.rotation.order = 'YXZ';
+    const col = new THREE.Color();
+    groups.forEach((list, k) => {
+      const glow = k.endsWith('|g');
+      const mesh = new THREE.InstancedMesh(GEO[list[0].kind], glow ? glowMat : kitMat, list.length);
+      list.forEach((p, i) => {
+        o.position.set(p.x, p.y + p.h / 2, p.z); o.rotation.set(p.rx, p.ry, p.rz); o.scale.set(p.w, p.h, p.d);
+        o.updateMatrix(); mesh.setMatrixAt(i, o.matrix); mesh.setColorAt(i, col.set(p.color));
+      });
+      mesh.castShadow = !glow; mesh.receiveShadow = true;
+      mesh.computeBoundingSphere();
+      world.add(mesh);
+    });
+    parts.length = 0;
+  }
+
+  /* ── 共用道具 ── */
+  const LEAVES = [C.leaf, C.leaf2, C.leaf3];
+  function tree(p, x, z, s = 1, k = 0) {
+    p('cyl', x, 0, z, .16 * s, 1 * s, .16 * s, C.woodDark);
+    [[-.24, .75, .08, .9], [.26, .9, .05, .82], [0, 1.18, -.1, .8], [-.05, .86, -.28, .74]].forEach(([dx, dy, dz, d], i) =>
+      p('sphere', x + dx * s, dy * s, z + dz * s, d * s, d * .92 * s, d * s, LEAVES[(k + i) % 3]));
+  }
+  function pine(p, x, z, s = 1, k = 0) {
+    p('cyl', x, 0, z, .13 * s, .7 * s, .13 * s, C.woodDark);
+    for (let i = 0; i < 3; i++) p('cone', x, (.45 + i * .42) * s, z, (1.05 - i * .24) * s, .95 * s, (1.05 - i * .24) * s, (i + k) % 2 ? C.pine : C.pine2);
+  }
+  function bush(p, x, z, s = 1, k = 0) {
+    p('sphere', x, 0, z, .62 * s, .46 * s, .56 * s, LEAVES[k % 3]);
+    p('sphere', x + .26 * s, 0, z + .12 * s, .42 * s, .34 * s, .4 * s, LEAVES[(k + 1) % 3]);
+  }
+  function cottage(p, x, z, roofC = C.roof, s = 1) {
+    p('round', x, -.02, z, 1.62 * s, .14 * s, 1.38 * s, C.stoneDark);
+    p('round', x, 0, z, 1.5 * s, 1.05 * s, 1.25 * s, C.wall);
+    p('prism', x, 1 * s, z, 1.75 * s, .78 * s, 1.45 * s, roofC);
+    p('round', x, 0, z + .6 * s, .36 * s, .66 * s, .08 * s, C.woodDark);
+    [-.45, .45].forEach(dx => p('box', x + dx * s, .42 * s, z + .62 * s, .3 * s, .28 * s, .05 * s, '#ffe1a0'));
+  }
+
+  /* ── 島工廠 ── */
+  const M = {
+    grass: std(C.grass), grass2: std(C.grass2), grass3: std(C.grass3), sand: std(C.sand), cliff: std(C.cliff), cliffDark: std(C.cliffDark),
+    foam: basic(C.foam, { transparent: true, opacity: .6, depthWrite: false, side: THREE.DoubleSide }),
+    shallow: basic(C.shallow, { transparent: true, opacity: .5, depthWrite: false, side: THREE.DoubleSide }),
+  };
+  const BASE_H = 1.0, BEVEL = .08, GROUND = BASE_H + BEVEL;
+  function outline(seed, radius, wobble = .1, n = 56) {
+    const r = mulberry32(seed);
+    const hs = [[2, .45], [3, .3], [4, .15], [7, .1]].map(([f, w]) => [f, w, r() * Math.PI * 2]);
+    return Array.from({ length: n }, (_, i) => {
+      const a = i / n * Math.PI * 2, k = 1 + wobble * hs.reduce((s, [f, w, ph]) => s + w * Math.sin(f * a + ph), 0);
+      return [Math.cos(a) * radius * k, Math.sin(a) * radius * k];
+    });
+  }
+  const scaled = (pts, s, inset = 0) => pts.map(([x, z]) => {
+    const r = Math.hypot(x, z), k = inset ? Math.max(r - inset, r * .05) / r : 1;
+    return [x * s * k, z * s * k];
+  });
+  const shapeOf = pts => {
+    const sh = new THREE.Shape();
+    pts.forEach(([x, z], i) => (i ? sh.lineTo(x, -z) : sh.moveTo(x, -z)));
+    sh.closePath(); return sh;
+  };
+  function slab(pts, depth, mats, y) {
+    const g = new THREE.ExtrudeGeometry(shapeOf(pts), { depth, bevelEnabled: true, bevelThickness: BEVEL, bevelSize: .1, bevelSegments: 2, curveSegments: 4 });
+    g.rotateX(-Math.PI / 2);
+    const m = new THREE.Mesh(g, mats); m.position.y = y; m.castShadow = true; m.receiveShadow = true; return m;
+  }
+  function ring(pts, inner, outer, mat, y) {
+    const sh = shapeOf(scaled(pts, outer)), hole = new THREE.Path();
+    [...scaled(pts, inner)].reverse().forEach(([x, z], i) => (i ? hole.lineTo(x, -z) : hole.moveTo(x, -z)));
+    sh.holes.push(hole);
+    const g = new THREE.ShapeGeometry(sh, 2); g.rotateX(-Math.PI / 2);
+    const m = new THREE.Mesh(g, mat); m.position.y = y; m.renderOrder = 1; return m;
+  }
+  const isles = {};
+  function makeIsle(key, { u, v, radius, seed, grass = 'grass', highland = 0 }) {
+    const { x, z } = toWorld(u, v), pts = outline(seed, radius);
+    const g = new THREE.Group(); g.position.set(x, 0, z);
+    g.add(ring(pts, 1.24, 1.42, M.shallow, .02));
+    g.add(ring(pts, 1.13, 1.19, M.foam, .05));
+    g.add(slab(scaled(pts, 1.12), .2, [M.sand, M.sand], -.14));
+    g.add(slab(scaled(pts, 1), .34, [M.cliffDark, M.cliffDark], 0));
+    g.add(slab(scaled(pts, 1, .07), BASE_H, [M[grass], M.cliff], 0));
+    let top = GROUND;
+    if (highland) { g.add(slab(scaled(pts, highland, .05), 1, [M.grass2, M.cliff], GROUND)); top = GROUND + 1 + BEVEL; }
+    world.add(g);
+    const angR = a => {
+      const n = pts.length, q = ((a / (Math.PI * 2)) % 1 + 1) % 1 * n, i = Math.floor(q), f = q - i;
+      const [x0, z0] = pts[i % n], [x1, z1] = pts[(i + 1) % n];
+      return Math.hypot(x0, z0) * (1 - f) + Math.hypot(x1, z1) * f;
+    };
+    const I = { key, x, z, radius, top, angR, gaps: [], labelH: 6 };
+    I.inside = (wx, wz, m = .8) => Math.hypot(wx - x, wz - z) < angR(Math.atan2(wz - z, wx - x)) * m;
+    isles[key] = I;
+    return I;
+  }
+
+  /* ── 佈局：計畫島分往高一到高二的路線，以及資源港 ── */
+  const plan = makeIsle('plan', { u: -19, v: 15, radius: 9.5, seed: 11, grass: 'grass3' });
+  const junior = makeIsle('junior', { u: -17, v: -11, radius: 9, seed: 23 });
+  const middle = makeIsle('middle', { u: 5, v: -17, radius: 9, seed: 37, grass: 'grass2' });
+  const senior = makeIsle('senior', { u: 22, v: 2, radius: 9.5, seed: 49, highland: .55 });
+  const harbor = makeIsle('harbor', { u: 3, v: 20, radius: 9, seed: 61, grass: 'grass3' });
+  const FACE = Math.PI / 4;
+
+  /* ── 拱橋 ── */
+  function bridge(A, B) {
+    const dx = B.x - A.x, dz = B.z - A.z, L = Math.hypot(dx, dz), ux = dx / L, uz = dz / L;
+    const aA = Math.atan2(uz, ux), aB = Math.atan2(-uz, -ux), s0 = A.angR(aA) * .9, s1 = L - B.angR(aB) * .9;
+    A.gaps.push(aA); B.gaps.push(aB);
+    const p0 = new THREE.Vector3(A.x + ux * s0, A.top - .04, A.z + uz * s0), p2 = new THREE.Vector3(A.x + ux * s1, B.top - .04, A.z + uz * s1);
+    const p1 = p0.clone().lerp(p2, .5); p1.y = Math.max(p0.y, p2.y) + Math.min(1.6, .22 * (s1 - s0) + .4);
+    const curve = new THREE.QuadraticBezierCurve3(p0, p1, p2), n = Math.max(4, Math.round(curve.getLength() / .3)), pts = curve.getSpacedPoints(n), ry = Math.atan2(ux, uz);
+    for (let i = 0; i < n; i++) {
+      const a = pts[i], b = pts[i + 1], h = Math.hypot(b.x - a.x, b.z - a.z), m = a.clone().lerp(b, .5), rx = -Math.atan2(b.y - a.y, h);
+      part('box', m.x, m.y - .035, m.z, 1.12, .07, h * .92, i % 3 ? C.wood : C.woodDark, { rx, ry });
+      [-1, 1].forEach(side => {
+        const ox = uz * .56 * side, oz = -ux * .56 * side;
+        part('box', m.x + ox, m.y + .44, m.z + oz, .05, .05, h + .02, C.woodDark, { rx, ry });
+        if (i % 3 === 0) part('cyl', m.x + ox, m.y - .1, m.z + oz, .08, .58, .08, C.woodDark);
+      });
+    }
+  }
+  bridge(plan, junior); bridge(junior, middle); bridge(middle, senior); bridge(plan, harbor);
+
+  /* ── 地標 ── */
+  // 計畫島：燈塔＋會點亮的 L 形點陣（呼應奇數和）
+  {
+    const p = at(plan.x, plan.top, plan.z, FACE);
+    p('cyl', -3, 0, -2.4, 2.8, .4, 2.8, C.stoneDark);
+    for (let i = 0; i < 6; i++) p('cyl', -3, .4 + i * 1, -2.4, 2 - i * .13, 1, 2 - i * .13, i % 2 ? C.white : C.red);
+    p('cyl', -3, 6.4, -2.4, 1.5, .18, 1.5, C.ink);
+    p('cyl', -3, 6.58, -2.4, .9, .9, .9, '#ffe9a8', { glow: true });
+    p('cone', -3, 7.48, -2.4, 1.5, 1, 1.5, C.navy);
+    const N = 5, S = .95;
+    p('round', 2.6, -.02, 1.8, N * S + .5, .12, N * S + .5, C.stone);
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+      const layer = Math.max(i, j);
+      p('sphere', 2.6 + (i - 2) * S, .12, 1.8 + (j - 2) * S, .62, .62, .62, layer % 2 ? C.gold : C.navy);
+    }
+    plan.labelH = 9.2;
+  }
+  // 初級島：水門＋文氏圖地面（集合與邏輯）
+  {
+    const p = at(junior.x, junior.top, junior.z, FACE);
+    [-2.3, 2.3].forEach(x => {
+      p('round', x, 0, -2, 1.6, 4.6, 1.6, C.stone);
+      p('cone', x, 4.6, -2, 1.9, 1.1, 1.9, C.roof);
+    });
+    p('round', 0, 3.5, -2, 3.2, .75, 1.1, C.stoneDark);
+    p('box', 0, 1.15, -2, 3, 1.5, .25, C.woodDark);
+    p('box', 0, .02, -.2, 2.6, .06, 5.5, '#7cc4d0');
+    [[-1.05, 3.4, C.navy], [1.05, 3.4, C.red]].forEach(([dx, dz, c]) =>
+      p('torus', dx + 3.9, .1, dz - .5, 3.8, 3.8, 3.8, c, { rx: Math.PI / 2 }));
+    junior.labelH = 7.2;
+  }
+  // 中級島：碼頭木箱的高度是 k 含幾個因數 2 再加一（尺規序列）
+  {
+    const p = at(middle.x, middle.top, middle.z, FACE);
+    const v2 = k => { let c = 0; while (k % 2 === 0) { k /= 2; c++; } return c; };
+    p('round', 0, -.02, 2.2, 8.9, .14, 1.5, C.wood);
+    for (let k = 1; k <= 8; k++) {
+      const h = v2(k) + 1;
+      for (let y = 0; y < h; y++) p('round', -3.85 + (k - 1) * 1.1, .12 + y * .92, 2.2, .86, .86, .86, y === h - 1 ? C.gold : C.wood);
+    }
+    p('round', -2.6, 0, -2.8, 4, 2.4, 3, C.wall);
+    p('prism', -2.6, 2.4, -2.8, 4.4, 1.3, 3.4, C.forest);
+    p('box', -2.6, .05, -1.25, .9, 1.5, .1, C.woodDark);
+    p('cyl', 3, 0, -3, .3, 5, .3, C.woodDark);
+    p('box', 1.7, 4.7, -3, 2.9, .2, .2, C.woodDark);
+    p('cyl', .6, 2.5, -3, .05, 2.2, .05, C.ink);
+    p('round', .6, 1.8, -3, .8, .8, .8, C.gold);
+    middle.labelH = 6.8;
+  }
+  // 高級島：觀測站與懸浮的正十二面體
+  const solids = [];
+  {
+    const p = at(senior.x, senior.top, senior.z, FACE);
+    p('cyl', 0, 0, -1.2, 5.2, 2.1, 5.2, C.wall);
+    p('dome', 0, 2.1, -1.2, 5, 2.8, 5, C.navy);
+    p('box', 0, 3.3, 1, .8, .5, 1.2, C.gold, { rx: -.5 });
+    p('round', 0, 0, 1.4, .9, 1.5, .1, C.woodDark);
+    const solidMat = (c) => new THREE.MeshLambertMaterial({ color: c, flatShading: true });
+    [[new THREE.TetrahedronGeometry(.8), C.red, -3.8, 3.4], [new THREE.BoxGeometry(1.05, 1.05, 1.05), C.gold, -1.9, 4.5], [new THREE.OctahedronGeometry(.8), C.forest, .2, 4.8], [new THREE.IcosahedronGeometry(.8), C.navy, 2.2, 4.3]].forEach(([geo, c, lx, lz]) => {
+      p('cyl', lx, 0, lz, .9, .5, .9, C.stone);
+      const m = new THREE.Mesh(geo, solidMat(c)), w = new THREE.Vector3(lx, 0, lz).applyAxisAngle(new THREE.Vector3(0, 1, 0), FACE);
+      m.position.set(senior.x + w.x, senior.top + 1.4, senior.z + w.z); m.castShadow = true; world.add(m); solids.push(m);
+    });
+    const big = new THREE.Mesh(new THREE.DodecahedronGeometry(1.25), solidMat(C.gold)), w = new THREE.Vector3(0, 0, -1.2).applyAxisAngle(new THREE.Vector3(0, 1, 0), FACE);
+    big.position.set(senior.x + w.x, senior.top + 6.3, senior.z + w.z); big.castShadow = true; world.add(big); solids.push(big);
+    anims.push((t, dt) => solids.forEach((m, i) => { m.rotation.y += dt * (.35 + i * .04); m.rotation.x += dt * .2; if (i === 4) m.position.y = senior.top + 6.3 + Math.sin(t) * .15; }));
+    senior.labelH = 8.6;
+  }
+  // 資源港：碼頭、書庫、諮詢小屋與船
+  {
+    const p = at(harbor.x, harbor.top, harbor.z, FACE);
+    cottage(p, -3.3, -2.8, C.navy, 1.7);
+    p('round', 1, 0, -3, 3.6, 2, 2.4, C.wall);
+    p('prism', 1, 2, -3, 4, 1, 2.8, C.roof);
+    [C.red, C.navy, C.gold, C.forest, C.white].forEach((c, i) => p('round', 4.1, .02 + i * .28, -1.2, 1.5 - i * .08, .25, 1.1, c));
+    // 碼頭從岸邊伸入海面
+    const dock = at(harbor.x, 0, harbor.z, FACE - .9);
+    dock('round', 0, .72, 8.7, 2.2, .16, 6.4, C.wood);
+    [[-.95, 6.3], [.95, 6.3], [-.95, 8.7], [.95, 8.7], [-.95, 11.1], [.95, 11.1]].forEach(([x, z]) => dock('cyl', x, -.2, z, .24, 1.05, .24, C.woodDark));
+    harbor.labelH = 5.5;
+  }
+  // 植被：避開地標與橋頭
+  const LAND = {
+    plan: [[-3, -2.4, 2.6], [2.6, 1.8, 3.8]], junior: [[0, -2, 4.4], [0, 1.4, 2.4], [3.9, 2.9, 2.9]], middle: [[0, 2.2, 5.2], [-2.6, -2.8, 3.2], [2, -3, 2.2]],
+    senior: [[0, -1.2, 3.8], [-1, 4.3, 3.8], [1.8, 4.2, 2.2]], harbor: [[-3.3, -2.8, 2.8], [1, -3, 2.8], [4.1, -1.2, 1.5], [5, 5, 3]],
+  };
+  Object.values(isles).forEach((I, n) => {
+    const p = at(I.x, I.top, I.z, FACE), c = Math.cos(FACE), s = Math.sin(FACE);
+    for (let k = 0, tries = 0; k < 15 && tries < 130; tries++) {
+      const a = rnd() * Math.PI * 2, r = (.22 + rnd() * .68) * I.radius, x = Math.cos(a) * r, z = Math.sin(a) * r;
+      if (LAND[I.key].some(([lx, lz, lr]) => Math.hypot(x - lx, z - lz) < lr)) continue;
+      const wx = I.x + x * c + z * s, wz = I.z - x * s + z * c, wa = Math.atan2(wz - I.z, wx - I.x);
+      if (!I.inside(wx, wz, .85) || I.gaps.some(g => Math.abs(Math.atan2(Math.sin(wa - g), Math.cos(wa - g))) < .32)) continue;
+      const kind = k % 3, sz = .9 + rnd() * .6;
+      if (kind === 0) pine(p, x, z, sz, n); else if (kind === 1) tree(p, x, z, sz, n + k); else bush(p, x, z, sz, k);
+      k++;
+    }
+  });
+  flushParts();
+
+  /* ── 海、船、雲、獼猴 ── */
+  const sea = new THREE.Mesh(new THREE.CircleGeometry(240, 48), basic('#93d3e0')); sea.rotation.x = -Math.PI / 2; sea.position.y = -.25; world.add(sea);
+  const waveMat = basic('#d8f2f4', { transparent: true, opacity: .55, depthWrite: false });
+  const waves = new THREE.InstancedMesh(new THREE.BoxGeometry(1, .01, .1), waveMat, 70), wo = new THREE.Object3D();
+  for (let i = 0, placed = 0; i < 400 && placed < 70; i++) {
+    const x = (rnd() - .5) * 110, z = (rnd() - .5) * 110;
+    if (Object.values(isles).some(I => Math.hypot(x - I.x, z - I.z) < I.radius * 1.55)) continue;
+    wo.position.set(x, -.2, z); wo.rotation.y = FACE; wo.scale.set(1 + rnd() * 2.2, 1, 1); wo.updateMatrix(); waves.setMatrixAt(placed++, wo.matrix);
+  }
+  world.add(waves);
+  function makeBoat(c) {
+    const b = new THREE.Group();
+    const hull = new THREE.Mesh(new THREE.BoxGeometry(2.4, .5, .9), std(C.white)); hull.position.y = .15; b.add(hull);
+    const mast = new THREE.Mesh(new THREE.CylinderGeometry(.04, .04, 2.1, 6), std(C.woodDark)); mast.position.y = 1.2; b.add(mast);
+    const sail = new THREE.Mesh(new THREE.ConeGeometry(.8, 1.7, 3), std(c)); sail.scale.z = .08; sail.position.set(.25, 1.35, 0); b.add(sail);
+    world.add(b); return b;
+  }
+  const boats = [makeBoat(C.red), makeBoat(C.gold)];
+  anims.push(t => {
+    boats[0].position.set(-2 + Math.cos(t * .09) * 13, -.15 + Math.sin(t * 1.1) * .05, 12 + Math.sin(t * .09) * 7); boats[0].rotation.y = -t * .09 - Math.PI / 2;
+    boats[1].position.set(33 + Math.cos(t * .07 + 2) * 7, -.15 + Math.sin(t) * .05, 9 + Math.sin(t * .07 + 2) * 11); boats[1].rotation.y = -t * .07;
+  });
+
+  // 小獼猴：跳到正在看的島。站在面向鏡頭的島緣
+  const monkey = new THREE.Group();
+  {
+    const add = (geo, c, x, y, z, sx, sy = sx, sz = sx) => { const m = new THREE.Mesh(geo, std(c)); m.position.set(x, y, z); m.scale.set(sx, sy, sz); m.castShadow = true; monkey.add(m); };
+    const s = GEO.sphere;
+    add(s, C.fur, 0, .62, 0, 1, 1.05, .85); add(s, C.skin, 0, .6, .22, .6, .72, .5);
+    add(s, C.fur, 0, 1.38, 0, 1, .95, .95); add(s, C.skin, 0, 1.3, .24, .66, .55, .55);
+    [-1, 1].forEach(d => { add(s, C.skin, d * .5, 1.45, 0, .34); add(s, '#2b2420', d * .17, 1.48, .46, .11); add(s, C.fur, d * .46, .62, .05, .28, .72, .28); add(s, C.fur, d * .22, .12, .1, .32, .28, .42); });
+    monkey.scale.setScalar(.92); world.add(monkey);
+  }
+  const monkeySpot = (I, out) => { const d = toWorld(0, .72 * I.radius); return out.set(I.x + d.x, I.top - .02, I.z + d.z); };
+  let hop = null; monkeySpot(plan, monkey.position);
+  function monkeyTo(I) {
+    const to = monkeySpot(I, new THREE.Vector3());
+    if (!motion()) { monkey.position.copy(to); return; }
+    hop = { from: monkey.position.clone(), to, t0: performance.now(), dur: 1000 };
+  }
+  anims.push(t => { if (!hop) monkey.rotation.z = Math.sin(t * 2.2) * .05; });
+
+  // 選取標記
+  const marker = new THREE.Mesh(GEO.cone, basic(C.red)); marker.scale.set(1.1, 1.3, 1.1); marker.rotation.x = Math.PI; marker.visible = false; world.add(marker);
+  let selected = null;
+  anims.push(t => { if (selected) marker.position.y = isles[selected].top + isles[selected].labelH + .3 + Math.sin(t * 3) * .15; });
+
+  /* ── 相機 ── */
+  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, .1, 500);
+  const POLAR = 52 * Math.PI / 180, DIST = 110;
+  const HOME = Object.values(isles).reduce((s, I) => s.add(new THREE.Vector3(I.x, 0, I.z)), new THREE.Vector3()).multiplyScalar(.2);
+  const controls = new OrbitControls(camera, canvas);
+  controls.enablePan = false;
+  controls.minPolarAngle = 40 * Math.PI / 180; controls.maxPolarAngle = 64 * Math.PI / 180;
+  controls.minZoom = .8; controls.maxZoom = 5;
+  controls.enableDamping = motion(); controls.dampingFactor = .08;
+  controls.rotateSpeed = .6; controls.zoomSpeed = 1.1;
+  controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_ROTATE };
+  camera.position.set(HOME.x + Math.sin(POLAR) * Math.sin(FACE) * DIST, Math.cos(POLAR) * DIST, HOME.z + Math.sin(POLAR) * Math.cos(FACE) * DIST);
+  camera.lookAt(HOME); camera.updateMatrixWorld();
+  const RV = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0), UV = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 1), FV = camera.getWorldDirection(new THREE.Vector3());
+  const FIT = { r: 30, u: 18 };
+  {
+    let r0 = 1e9, r1 = -1e9, u0 = 1e9, u1 = -1e9; const q = new THREE.Vector3();
+    Object.values(isles).forEach(I => {
+      for (let k = 0; k < 16; k++) {
+        const a = k / 16 * Math.PI * 2;
+        [0, I.top + I.labelH].forEach(h => {
+          q.set(I.x + Math.cos(a) * I.radius * 1.2 - HOME.x, h, I.z + Math.sin(a) * I.radius * 1.2 - HOME.z);
+          const r = q.dot(RV), u = q.dot(UV); r0 = Math.min(r0, r); r1 = Math.max(r1, r); u0 = Math.min(u0, u); u1 = Math.max(u1, u);
+        });
+      }
+    });
+    FIT.r = (r1 - r0) / 2; FIT.u = (u1 - u0) / 2;
+    HOME.addScaledVector(RV, (r0 + r1) / 2).addScaledVector(UV, (u0 + u1) / 2);
+    HOME.addScaledVector(FV, -HOME.y / FV.y);
+  }
+  controls.target.copy(HOME);
+  camera.position.copy(HOME).addScaledVector(FV, -DIST); camera.lookAt(HOME);
+  const DPRS = narrow() ? [1.25, 1] : [1.5, 1.25, 1];
+  function resize() {
+    const w = stage.clientWidth, h = stage.clientHeight;
+    if (!w || !h) return;
+    const aspect = w / h;
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, DPRS[dprLevel]));
+    renderer.setSize(w, h, false);
+    const half = Math.max(FIT.u * 1.1 + 2.4, FIT.r * 1.04 / aspect);
+    Object.assign(camera, { left: -half * aspect, right: half * aspect, top: half, bottom: -half });
+    camera.updateProjectionMatrix(); tagsDirty = true; requestRender();
+  }
+  let fly = null;
+  function flyTo(target, zoom) {
+    if (!motion()) {
+      const off = camera.position.clone().sub(controls.target);
+      controls.target.copy(target); camera.position.copy(target).add(off);
+      camera.zoom = zoom; camera.updateProjectionMatrix(); controls.update(); requestRender(); return;
+    }
+    fly = { from: controls.target.clone(), to: target.clone(), z0: camera.zoom, z1: zoom, t0: performance.now(), dur: 800 };
+    requestRender();
+  }
+  function stepFly(now) {
+    if (!fly) return false;
+    const k = Math.min(1, (now - fly.t0) / fly.dur), e = 1 - Math.pow(1 - k, 3), off = camera.position.clone().sub(controls.target);
+    controls.target.lerpVectors(fly.from, fly.to, e); camera.position.copy(controls.target).add(off);
+    camera.zoom = fly.z0 + (fly.z1 - fly.z0) * e; camera.updateProjectionMatrix();
+    if (k >= 1) fly = null;
+    return true;
+  }
+
+  /* ── 拾取 ── */
+  const picks = Object.values(isles).map(I => {
+    const h = I.top + I.labelH;
+    const m = new THREE.Mesh(new THREE.CylinderGeometry(I.radius * .95, I.radius * .95, h, 18), new THREE.MeshBasicMaterial());
+    m.position.set(I.x, h / 2, I.z); m.userData.key = I.key; m.visible = false; m.updateMatrixWorld(); world.add(m); return m;
+  });
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2(), v3 = new THREE.Vector3();
+  function pickAt(cx, cy) {
+    const r = canvas.getBoundingClientRect();
+    ndc.set((cx - r.left) / r.width * 2 - 1, -(cy - r.top) / r.height * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObjects(picks, false)[0];
+    return hit ? hit.object.userData.key : null;
+  }
+  let hover = null, down = null;
+  function setHover(key) {
+    if (key === hover) return;
+    hover = key; canvas.classList.toggle('is-hover', !!key);
+    tags.forEach(T => T.el.classList.toggle('is-hover', !!key && T.key === key));
+  }
+  canvas.addEventListener('pointerdown', e => { down = { x: e.clientX, y: e.clientY }; });
+  canvas.addEventListener('pointermove', e => { if (e.pointerType === 'mouse' && !e.buttons) setHover(pickAt(e.clientX, e.clientY)); });
+  canvas.addEventListener('pointerleave', () => setHover(null));
+  canvas.addEventListener('pointerup', e => {
+    if (!down || Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) { down = null; return; }
+    down = null;
+    const key = pickAt(e.clientX, e.clientY);
+    if (key) select(key);
+  });
+  canvas.addEventListener('keydown', e => {
+    const step = Math.PI / 12;
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+      const off = camera.position.clone().sub(controls.target);
+      off.applyAxisAngle(new THREE.Vector3(0, 1, 0), e.key === 'ArrowLeft' ? -step : step);
+      camera.position.copy(controls.target).add(off); controls.update(); requestRender(); e.preventDefault();
+    } else if (['+', '=', '-', 'ArrowUp', 'ArrowDown'].includes(e.key)) {
+      const zin = e.key === '+' || e.key === '=' || e.key === 'ArrowUp';
+      camera.zoom = Math.min(controls.maxZoom, Math.max(controls.minZoom, camera.zoom * (zin ? 1.2 : 1 / 1.2)));
+      camera.updateProjectionMatrix(); tagsDirty = true; requestRender(); e.preventDefault();
+    }
+  });
+  controls.addEventListener('change', () => { tagsDirty = true; requestRender(); });
+
+  /* ── HTML 標籤 ── */
+  const layer = $('islLabels');
+  const tags = ISLES.map(i => {
+    const I = isles[i.key], btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'isl-tag'; btn.tabIndex = -1; btn.setAttribute('aria-hidden', 'true');
+    const n = document.createElement('span'); n.className = 'isl-tag-num'; n.textContent = i.code;
+    const t = document.createElement('span'); t.className = 'isl-tag-t'; t.textContent = i.name;
+    const s = document.createElement('small'); s.textContent = i.landmark; t.appendChild(s);
+    btn.append(n, t); btn.addEventListener('click', () => select(i.key)); layer.appendChild(btn);
+    return { el: btn, key: i.key, anchor: new THREE.Vector3(I.x, I.top + I.labelH, I.z) };
+  });
+  function placeTags() {
+    const W = canvas.clientWidth, H = canvas.clientHeight;
+    tags.forEach(T => {
+      v3.copy(T.anchor).project(camera);
+      const x = (v3.x + 1) / 2 * W, y = (1 - v3.y) / 2 * H, w = T.el.offsetWidth, h = T.el.offsetHeight;
+      const off = x - w / 2 < 2 || x + w / 2 > W - 2 || y - h - 6 < 0 || y > H;
+      T.el.classList.toggle('is-off', off);
+      if (!off) T.el.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px) translate(-50%, calc(-100% - 6px))`;
+    });
+  }
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { tagsDirty = true; requestRender(); });
+
+  /* ── 繪製迴圈：環境動畫約 30fps；閒置 45 秒或不在畫面上就停 ── */
+  const IDLE_MS = () => window.__islandIdleMs || 45000;
+  let last = performance.now(), lastDraw = 0, lastInput = performance.now(), sampleT = 0, sampleN = 0;
+  const idle = () => performance.now() - lastInput > IDLE_MS();
+  const animating = () => motion() && onScreen && document.visibilityState === 'visible' && !idle();
+  function wake() { const was = idle(); lastInput = performance.now(); if (was) requestRender(); }
+  ['pointerdown', 'pointermove', 'wheel', 'keydown', 'touchstart'].forEach(ev => window.addEventListener(ev, wake, { passive: true }));
+  function requestRender() { need = true; if (!raf && alive) raf = requestAnimationFrame(frame); }
+  function stepHop(now) {
+    if (!hop) return false;
+    const k = Math.min(1, (now - hop.t0) / hop.dur);
+    monkey.position.lerpVectors(hop.from, hop.to, k); monkey.position.y += Math.sin(k * Math.PI) * 7;
+    if (k >= 1) hop = null;
+    return true;
+  }
+  function frame(now) {
+    raf = 0; if (!alive) return;
+    const dt = Math.min(.1, (now - last) / 1000); last = now;
+    const flying = stepFly(now), hopping = stepHop(now), moved = controls.update(), anim = animating();
+    const busy = need || flying || hopping || moved;
+    if (!busy && anim && now - lastDraw < 32) { raf = requestAnimationFrame(frame); return; }
+    if (anim) { const t = now / 1000; anims.forEach(f => f(t, Math.min(.1, (now - (lastDraw || now)) / 1000))); }
+    if (busy || anim) {
+      if (lastDraw) {
+        const gap = now - lastDraw;
+        if (gap < 250) { sampleT += gap; sampleN++; }
+        if (sampleT > 2000) {
+          if (sampleT / sampleN > (busy ? 35 : 64) && dprLevel < DPRS.length - 1) { dprLevel++; resize(); }
+          sampleT = 0; sampleN = 0;
+        }
+      }
+      renderer.render(world, camera); lastDraw = now; draws++;
+      if (tagsDirty || flying || moved) { placeTags(); tagsDirty = false; }
+      need = false;
+    }
+    if ((anim || flying || hopping || moved) && !raf) raf = requestAnimationFrame(frame);
+  }
+  const ro = new ResizeObserver(resize); ro.observe(stage);
+  new IntersectionObserver(es => { onScreen = es[0].isIntersecting; requestRender(); }).observe(stage);
+  document.addEventListener('visibilitychange', requestRender);
+  reduceMotion.addEventListener('change', () => { controls.enableDamping = motion(); requestRender(); });
+  anims.forEach(f => f(1.7, 0));
+  resize();
+
+  return {
+    select(key, doFly) {
+      const changed = selected !== key;
+      selected = key && isles[key] ? key : null;
+      marker.visible = !!selected;
+      tags.forEach(T => T.el.classList.toggle('is-current', T.key === selected));
+      if (selected) {
+        const I = isles[selected];
+        marker.position.set(I.x, I.top + I.labelH + .3, I.z);
+        if (changed) monkeyTo(I);
+        if (doFly) flyTo(new THREE.Vector3(I.x, I.top, I.z), narrow() ? 1.9 : 2.1);
+      }
+      wake(); tagsDirty = true; requestRender();
+    },
+    reset() { flyTo(HOME.clone(), 1); wake(); },
+    // 以下給 tools/check_browser.js 用
+    stats() { return { draws, dprLevel, calls: renderer.info.render.calls, triangles: renderer.info.render.triangles }; },
+    screenPos(key) {
+      const I = isles[key]; if (!I) return null;
+      v3.set(I.x, I.top, I.z).project(camera);
+      const r = canvas.getBoundingClientRect();
+      return { x: r.left + (v3.x + 1) / 2 * r.width, y: r.top + (1 - v3.y) / 2 * r.height };
+    },
+    pickAt,
+    monkey() { return { x: monkey.position.x, z: monkey.position.z, hopping: !!hop }; },
+    async warm() {
+      try { await renderer.compileAsync(world, camera); } catch (e) { /* 舊版瀏覽器：第一幀時再編譯 */ }
+      renderer.shadowMap.needsUpdate = true; renderer.render(world, camera); placeTags(); tagsDirty = false; lastDraw = performance.now();
+      requestRender();
+    },
+    dispose() { alive = false; ro.disconnect(); controls.dispose(); renderer.dispose(); layer.replaceChildren(); },
+  };
+}
+
+function mulberry32(a) {
+  return function () {
+    a |= 0; a = a + 0x6D2B79F5 | 0;
+    let t = Math.imul(a ^ a >>> 15, 1 | a);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+</script>
+</body>
+</html>
