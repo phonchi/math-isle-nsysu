@@ -3,6 +3,7 @@
 function buildWorld(THREE, addons, renderer, stage, canvas) {
   const { OrbitControls, RoundedBoxGeometry } = addons;
   const motion = () => !reduceMotion.matches;
+  const SHOW = document.documentElement.classList.contains('show-mode');
   const narrow = () => stage.clientWidth < 768;
   const rnd = mulberry32(115);
   const SQ = Math.SQRT1_2;
@@ -138,12 +139,12 @@ function buildWorld(THREE, addons, renderer, stage, canvas) {
     const g = new THREE.ShapeGeometry(sh, 2); g.rotateX(-Math.PI / 2);
     const m = new THREE.Mesh(g, mat); m.position.y = y; m.renderOrder = 1; return m;
   }
-  const isles = {};
+  const isles = {}, foamRings = [];
   function makeIsle(key, { u, v, radius, seed, grass = 'grass', highland = 0 }) {
     const { x, z } = toWorld(u, v), pts = outline(seed, radius);
     const g = new THREE.Group(); g.position.set(x, 0, z);
     g.add(ring(pts, 1.24, 1.42, M.shallow, .02));
-    g.add(ring(pts, 1.13, 1.19, M.foam, .05));
+    const foam = ring(pts, 1.13, 1.19, M.foam, .05); g.add(foam); foamRings.push(foam);
     g.add(slab(scaled(pts, 1.12), .2, [M.sand, M.sand], -.14));
     g.add(slab(scaled(pts, 1), .34, [M.cliffDark, M.cliffDark], 0));
     g.add(slab(scaled(pts, 1, .07), BASE_H, [M[grass], M.cliff], 0));
@@ -170,13 +171,16 @@ function buildWorld(THREE, addons, renderer, stage, canvas) {
   const FACE = Math.PI / 4;
 
   /* ── 拱橋 ── */
+  const bridges = [];
   function bridge(A, B) {
     const dx = B.x - A.x, dz = B.z - A.z, L = Math.hypot(dx, dz), ux = dx / L, uz = dz / L;
     const aA = Math.atan2(uz, ux), aB = Math.atan2(-uz, -ux), s0 = A.angR(aA) * .9, s1 = L - B.angR(aB) * .9;
     A.gaps.push(aA); B.gaps.push(aB);
     const p0 = new THREE.Vector3(A.x + ux * s0, A.top - .04, A.z + uz * s0), p2 = new THREE.Vector3(A.x + ux * s1, B.top - .04, A.z + uz * s1);
     const p1 = p0.clone().lerp(p2, .5); p1.y = Math.max(p0.y, p2.y) + Math.min(1.6, .22 * (s1 - s0) + .4);
-    const curve = new THREE.QuadraticBezierCurve3(p0, p1, p2), n = Math.max(4, Math.round(curve.getLength() / .3)), pts = curve.getSpacedPoints(n), ry = Math.atan2(ux, uz);
+    const curve = new THREE.QuadraticBezierCurve3(p0, p1, p2);
+    bridges.push(curve);
+    const n = Math.max(4, Math.round(curve.getLength() / .3)), pts = curve.getSpacedPoints(n), ry = Math.atan2(ux, uz);
     for (let i = 0; i < n; i++) {
       const a = pts[i], b = pts[i + 1], h = Math.hypot(b.x - a.x, b.z - a.z), m = a.clone().lerp(b, .5), rx = -Math.atan2(b.y - a.y, h);
       part('box', m.x, m.y - .035, m.z, 1.12, .07, h * .92, i % 3 ? C.wood : C.woodDark, { rx, ry });
@@ -279,12 +283,15 @@ function buildWorld(THREE, addons, renderer, stage, canvas) {
     const dock = at(harbor.x, 0, harbor.z, FACE - .9);
     dock('round', 0, .72, 8.7, 2.2, .16, 6.4, C.wood);
     [[-.95, 6.3], [.95, 6.3], [-.95, 8.7], [.95, 8.7], [-.95, 11.1], [.95, 11.1]].forEach(([x, z]) => dock('cyl', x, -.2, z, .24, 1.05, .24, C.woodDark));
+    // 碼頭尾端的釣魚竿與釣線
+    dock('box', .32, 1.5, 11.25, .04, .04, 1.7, C.woodDark, { rx: -.5 });
+    dock('cyl', .32, -.2, 11.99, .02, 2.1, .02, C.ink);
     harbor.labelH = 5.5;
   }
   // 植被：避開地標與橋頭
   const LAND = {
-    plan: [[-3, -2.4, 2.6], [2.6, 1.8, 3.8]], junior: [[0, -2, 4.4], [0, 1.4, 2.4], [3.9, 2.9, 2.9]], middle: [[0, 2.75, 5.6], [-2.6, -2.8, 3.2], [2, -3, 2.2]],
-    senior: [[0, -1.2, 3.8], [-1, 4.3, 3.8], [1.8, 4.2, 2.2]], harbor: [[-3.3, -2.8, 2.8], [1, -3, 2.8], [4.1, -1.2, 1.5], [5, 5, 3]],
+    plan: [[-3, -2.4, 2.6], [2.6, 1.8, 3.8], [-1.6, 2.2, 2]], junior: [[0, -2, 4.4], [0, 1.4, 2.4], [3.9, 2.9, 2.9], [-3, 2.2, 2]], middle: [[0, 2.75, 5.6], [-2.6, -2.8, 3.2], [2, -3, 2.2]],
+    senior: [[0, -1.2, 3.8], [-1, 4.3, 3.8], [1.8, 4.2, 2.2]], harbor: [[-3.3, -2.8, 2.8], [1, -3, 2.8], [4.1, -1.2, 1.5], [5, 5, 3], [1, 1, 2.2]],
   };
   Object.values(isles).forEach((I, n) => {
     const p = at(I.x, I.top, I.z, FACE), c = Math.cos(FACE), s = Math.sin(FACE);
@@ -301,15 +308,46 @@ function buildWorld(THREE, addons, renderer, stage, canvas) {
   flushParts();
 
   /* ── 海、船、雲、獼猴 ── */
-  const sea = new THREE.Mesh(new THREE.CircleGeometry(240, 48), basic('#93d3e0')); sea.rotation.x = -Math.PI / 2; sea.position.y = -.25; world.add(sea);
-  const waveMat = basic('#d8f2f4', { transparent: true, opacity: .55, depthWrite: false });
-  const waves = new THREE.InstancedMesh(new THREE.BoxGeometry(1, .01, .1), waveMat, 70), wo = new THREE.Object3D();
-  for (let i = 0, placed = 0; i < 400 && placed < 70; i++) {
+  // 海面：用世界座標疊幾道正弦波，畫出流動的深淺色帶。不動格點，只有一次繪製
+  const seaMat = new THREE.ShaderMaterial({
+    uniforms: { t: { value: 0 }, base: { value: new THREE.Color('#93d3e0') }, crest: { value: new THREE.Color('#b6e6ec') }, trough: { value: new THREE.Color('#82c6d7') } },
+    vertexShader: `varying vec2 p;
+      void main() { vec4 w = modelMatrix * vec4(position, 1.0); p = w.xz; gl_Position = projectionMatrix * viewMatrix * w; }`,
+    fragmentShader: `uniform float t; uniform vec3 base, crest, trough; varying vec2 p;
+      void main() {
+        vec2 q = vec2(p.x - p.y, p.x + p.y) * .7071;
+        float w = sin(q.y * .95 + sin(q.x * .17 + t * .2) * 1.7 + t * .6) + .6 * sin(q.y * 1.75 - q.x * .13 - t * .5) + .4 * sin(q.x * .29 + q.y * .37 + t * .3);
+        vec3 col = mix(base, crest, smoothstep(.85, 1.7, w) * .45);
+        col = mix(col, trough, (1.0 - smoothstep(-1.7, -.85, w)) * .35);
+        gl_FragColor = vec4(col, 1.0);
+        #include <tonemapping_fragment>
+        #include <colorspace_fragment>
+      }`,
+  });
+  const sea = new THREE.Mesh(new THREE.CircleGeometry(240, 48), seaMat); sea.rotation.x = -Math.PI / 2; sea.position.y = -.25; world.add(sea);
+  const waveMat = basic('#e4f6f7', { transparent: true, opacity: .6, depthWrite: false });
+  const waves = new THREE.InstancedMesh(new THREE.BoxGeometry(1, .01, .1), waveMat, 70), wo = new THREE.Object3D(), waveSeed = [];
+  waves.frustumCulled = false;
+  for (let i = 0; i < 400 && waveSeed.length < 70; i++) {
     const x = (rnd() - .5) * 110, z = (rnd() - .5) * 110;
     if (Object.values(isles).some(I => Math.hypot(x - I.x, z - I.z) < I.radius * 1.55)) continue;
-    wo.position.set(x, -.2, z); wo.rotation.y = FACE; wo.scale.set(1 + rnd() * 2.2, 1, 1); wo.updateMatrix(); waves.setMatrixAt(placed++, wo.matrix);
+    waveSeed.push({ x, z, len: 1 + rnd() * 2.2, ph: rnd() * Math.PI * 2 });
   }
+  waves.count = waveSeed.length;
   world.add(waves);
+  anims.push(t => {
+    seaMat.uniforms.t.value = t;
+    waveSeed.forEach((w, i) => {
+      const k = Math.sin(t * .8 + w.ph), drift = Math.sin(t * .35 + w.ph) * .7;
+      wo.position.set(w.x + drift * SQ, -.2, w.z - drift * SQ); wo.rotation.y = FACE; wo.scale.set(w.len * (.75 + .25 * k), 1, 1 + .4 * k); wo.updateMatrix(); waves.setMatrixAt(i, wo.matrix);
+    });
+    waves.instanceMatrix.needsUpdate = true;
+    // 潮汐：岸邊的泡沫環輕輕進退
+    foamRings.forEach((m, i) => { const k = 1 + Math.sin(t * .7 + i * 1.3) * .012; m.scale.set(k, 1, k); });
+    M.foam.opacity = .6 + Math.sin(t * .7) * .18; M.shallow.opacity = .5 + Math.sin(t * .5 + 1) * .1;
+  });
+
+  /* 船：航線都在島與碼頭之外。一艘在中央水域，一艘在資源港與高級島外海；船頭跟著航向 */
   function makeBoat(c) {
     const b = new THREE.Group();
     const hull = new THREE.Mesh(new THREE.BoxGeometry(2.4, .5, .9), std(C.white)); hull.position.y = .15; b.add(hull);
@@ -317,11 +355,16 @@ function buildWorld(THREE, addons, renderer, stage, canvas) {
     const sail = new THREE.Mesh(new THREE.ConeGeometry(.8, 1.7, 3), std(c)); sail.scale.z = .08; sail.position.set(.25, 1.35, 0); b.add(sail);
     world.add(b); return b;
   }
+  const BOAT_PATHS = [{ u: .5, v: 2, ru: 5, rv: 4, speed: .09, ph: 0 }, { u: 22, v: 26, ru: 6, rv: 4, speed: .07, ph: 2 }];
+  const boatPoint = (P, a) => {
+    const u = P.u + Math.cos(a) * P.ru, v = P.v + Math.sin(a) * P.rv, du = -Math.sin(a) * P.ru, dv = Math.cos(a) * P.rv;
+    return { ...toWorld(u, v), heading: Math.atan2(-(dv - du), du + dv) };
+  };
   const boats = [makeBoat(C.red), makeBoat(C.gold)];
-  anims.push(t => {
-    boats[0].position.set(-2 + Math.cos(t * .09) * 13, -.15 + Math.sin(t * 1.1) * .05, 12 + Math.sin(t * .09) * 7); boats[0].rotation.y = -t * .09 - Math.PI / 2;
-    boats[1].position.set(33 + Math.cos(t * .07 + 2) * 7, -.15 + Math.sin(t) * .05, 9 + Math.sin(t * .07 + 2) * 11); boats[1].rotation.y = -t * .07;
-  });
+  anims.push(t => boats.forEach((b, i) => {
+    const P = BOAT_PATHS[i], q = boatPoint(P, t * P.speed + P.ph);
+    b.position.set(q.x, -.15 + Math.sin(t * (1.1 - i * .1)) * .05, q.z); b.rotation.y = q.heading; b.rotation.z = Math.sin(t * .9 + i) * .03;
+  }));
 
   // 小獼猴：跳到正在看的島。站在面向鏡頭的島緣
   const monkey = new THREE.Group();
@@ -342,6 +385,65 @@ function buildWorld(THREE, addons, renderer, stage, canvas) {
   }
   anims.push(t => { if (!hop) monkey.rotation.z = Math.sin(t * 2.2) * .05; });
 
+  // 島上的人：在地標旁來回走，或走在課程路線的橋上；另有一人在碼頭尾端釣魚
+  const walkOn = (I, x0, z0, x1, z1, speed, ph, y = I.top - .02, face = FACE) => ({ I, x0, z0, x1, z1, speed, ph, y, face });
+  const WALKERS = [
+    walkOn(plan, -1.6, 1, -1.6, 3.4, .28, 0), walkOn(junior, -3, 1, -3, 3.4, .24, 2), walkOn(middle, -2.4, 5.1, 2.4, 5.1, .22, 1), walkOn(senior, -1.2, 2.5, 1.2, 2.6, .26, 3),
+    walkOn(harbor, .1, .4, 2.2, 1.5, .25, 4), walkOn(harbor, 0, 10.7, 0, 10.7, 0, 0, .86, FACE - .9),
+    { curve: bridges[1], speed: .12, ph: 0 }, { curve: bridges[2], speed: .1, ph: 2 },
+  ];
+  const SHIRTS = [C.red, C.navy, C.gold, C.forest, '#d9825b', C.navy, '#5b8fb0', C.red];
+  const walkerPoint = (W, t, out) => {
+    const k = .5 - .5 * Math.cos(t * W.speed * 2 + W.ph);
+    if (W.curve) return W.curve.getPoint(.06 + k * .88, out);
+    const x = W.x0 + (W.x1 - W.x0) * k, z = W.z0 + (W.z1 - W.z0) * k, c = Math.cos(W.face), sn = Math.sin(W.face);
+    return out.set(W.I.x + x * c + z * sn, W.y, W.I.z - x * sn + z * c);
+  };
+  const bodyGeo = new THREE.CylinderGeometry(.15, .22, .72, 8); bodyGeo.translate(0, .36, 0);
+  const blobGeo = new THREE.CircleGeometry(.3, 12); blobGeo.rotateX(-Math.PI / 2);
+  const bodies = new THREE.InstancedMesh(bodyGeo, std('#ffffff'), WALKERS.length), heads = new THREE.InstancedMesh(GEO.sphere, std(C.skin), WALKERS.length);
+  const blobs = new THREE.InstancedMesh(blobGeo, basic('#2b3a36', { transparent: true, opacity: .22, depthWrite: false }), WALKERS.length);
+  const shirt = new THREE.Color();
+  WALKERS.forEach((_, i) => bodies.setColorAt(i, shirt.set(SHIRTS[i])));
+  [bodies, heads, blobs].forEach(m => { m.frustumCulled = false; world.add(m); });
+  const po = new THREE.Object3D(), pv = new THREE.Vector3();
+  anims.push(t => {
+    WALKERS.forEach((W, i) => {
+      walkerPoint(W, t, pv);
+      const step = W.speed ? Math.abs(Math.sin(t * 4 + i)) * .05 : 0;
+      po.position.set(pv.x, pv.y + .03, pv.z); po.scale.setScalar(1); po.updateMatrix(); blobs.setMatrixAt(i, po.matrix);
+      po.position.y = pv.y + step; po.updateMatrix(); bodies.setMatrixAt(i, po.matrix);
+      po.position.y = pv.y + step + .87; po.scale.setScalar(.36); po.updateMatrix(); heads.setMatrixAt(i, po.matrix);
+    });
+    [bodies, heads, blobs].forEach(m => { m.instanceMatrix.needsUpdate = true; });
+  });
+
+  // 海鷗：飛得比燈塔和觀測站高，翅膀交替拍動與滑翔
+  const GULLS = [
+    { u: -19, v: 13, r: 7, y: 13, speed: .22, ph: 0 }, { u: 2, v: 2, r: 9, y: 14, speed: -.16, ph: 1 }, { u: 9, v: 15, r: 11, y: 12.5, speed: .13, ph: 3 },
+    { u: 18, v: -5, r: 8, y: 14.5, speed: -.2, ph: 4 }, { u: -6, v: -8, r: 10, y: 13.5, speed: .15, ph: 5 },
+  ];
+  // 翅膀是後掠的三角形：翼根寬、翼尖窄且向後
+  const wingGeo = new THREE.BufferGeometry();
+  wingGeo.setAttribute('position', new THREE.Float32BufferAttribute([.3, 0, 0, -.2, 0, 0, -.32, 0, 1], 3));
+  wingGeo.computeVertexNormals();
+  const gullBodies = new THREE.InstancedMesh(GEO.sphere, std(C.white), GULLS.length), gullWings = new THREE.InstancedMesh(wingGeo, std('#f4f6f5', { side: THREE.DoubleSide }), GULLS.length * 2);
+  [gullBodies, gullWings].forEach(m => { m.frustumCulled = false; world.add(m); });
+  const go = new THREE.Object3D(); go.rotation.order = 'YXZ';
+  anims.push(t => {
+    GULLS.forEach((G, i) => {
+      const a = t * G.speed + G.ph, sign = Math.sign(G.speed), q = toWorld(G.u + Math.cos(a) * G.r, G.v + Math.sin(a) * G.r);
+      const du = -Math.sin(a) * sign, dv = Math.cos(a) * sign, heading = Math.atan2(-(dv - du), du + dv);
+      const glide = Math.sin(t * .6 + i * 2) > .2, flap = glide ? .12 : .16 + Math.sin(t * 7 + i) * .42;
+      const y = G.y + Math.sin(t * .8 + i) * .3;
+      go.position.set(q.x, y, q.z); go.rotation.set(0, heading, 0); go.scale.set(1, .3, .32); go.updateMatrix(); gullBodies.setMatrixAt(i, go.matrix);
+      go.scale.set(1, 1, 1);
+      go.rotation.set(-flap, heading, 0); go.updateMatrix(); gullWings.setMatrixAt(i * 2, go.matrix);
+      go.rotation.set(-flap, heading + Math.PI, 0); go.updateMatrix(); gullWings.setMatrixAt(i * 2 + 1, go.matrix);
+    });
+    gullBodies.instanceMatrix.needsUpdate = true; gullWings.instanceMatrix.needsUpdate = true;
+  });
+
   // 選取標記
   const marker = new THREE.Mesh(GEO.cone, basic(C.red)); marker.scale.set(1.1, 1.3, 1.1); marker.rotation.x = Math.PI; marker.visible = false; world.add(marker);
   let selected = null;
@@ -359,7 +461,7 @@ function buildWorld(THREE, addons, renderer, stage, canvas) {
   controls.rotateSpeed = .6; controls.zoomSpeed = 1.1;
   controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_ROTATE };
   // 會場投影版沒有人操作，讓群島慢慢轉；不動畫偏好優先
-  controls.autoRotate = document.documentElement.classList.contains('show-mode') && motion();
+  controls.autoRotate = SHOW && motion();
   controls.autoRotateSpeed = .35;
   camera.position.set(HOME.x + Math.sin(POLAR) * Math.sin(FACE) * DIST, Math.cos(POLAR) * DIST, HOME.z + Math.sin(POLAR) * Math.cos(FACE) * DIST);
   camera.lookAt(HOME); camera.updateMatrixWorld();
@@ -483,7 +585,7 @@ function buildWorld(THREE, addons, renderer, stage, canvas) {
   /* ── 繪製迴圈：環境動畫約 30fps；閒置 45 秒或不在畫面上就停 ── */
   const IDLE_MS = () => window.__islandIdleMs || 45000;
   let last = performance.now(), lastDraw = 0, lastInput = performance.now(), sampleT = 0, sampleN = 0;
-  const idle = () => performance.now() - lastInput > IDLE_MS();
+  const idle = () => !SHOW && performance.now() - lastInput > IDLE_MS();
   const animating = () => motion() && onScreen && document.visibilityState === 'visible' && !idle();
   function wake() { const was = idle(); lastInput = performance.now(); if (was) requestRender(); }
   ['pointerdown', 'pointermove', 'wheel', 'keydown', 'touchstart'].forEach(ev => window.addEventListener(ev, wake, { passive: true }));
@@ -548,6 +650,33 @@ function buildWorld(THREE, addons, renderer, stage, canvas) {
       return { x: r.left + (v3.x + 1) / 2 * r.width, y: r.top + (1 - v3.y) / 2 * r.height };
     },
     pickAt,
+    // 船身離沙岸、碼頭、橋面的最小距離；人是否站在島上
+    boatClearance() {
+      let min = Infinity;
+      const dockTip = new THREE.Vector3(), near = (x, z, a, b, c, d) => {
+        const dx = c - a, dz = d - b, k = Math.max(0, Math.min(1, ((x - a) * dx + (z - b) * dz) / (dx * dx + dz * dz)));
+        return Math.hypot(x - a - k * dx, z - b - k * dz);
+      };
+      const rot = FACE - .9, tipX = harbor.x + 11.9 * Math.sin(rot), tipZ = harbor.z + 11.9 * Math.cos(rot);
+      dockTip.set(tipX, 0, tipZ);
+      BOAT_PATHS.forEach(P => {
+        for (let i = 0; i < 720; i++) {
+          const q = boatPoint(P, i / 720 * Math.PI * 2);
+          Object.values(isles).forEach(I => { min = Math.min(min, Math.hypot(q.x - I.x, q.z - I.z) - I.angR(Math.atan2(q.z - I.z, q.x - I.x)) * 1.12); });
+          min = Math.min(min, near(q.x, q.z, harbor.x, harbor.z, dockTip.x, dockTip.z) - 1.1);
+          bridges.forEach(c => { for (let k = 0; k <= 20; k++) { const b = c.getPoint(k / 20); min = Math.min(min, Math.hypot(q.x - b.x, q.z - b.z) - .6); } });
+        }
+      });
+      return min;
+    },
+    walkers() {
+      const out = new THREE.Vector3();
+      return WALKERS.map(W => {
+        const ends = [0, Math.PI / (W.speed * 2 || 1)].map(t => walkerPoint(W, (t - W.ph / ((W.speed * 2) || 1)), out).clone());
+        return { bridge: !!W.curve, dock: W.y === .86, onLand: W.curve || W.y === .86 ? true : ends.every(e => W.I.inside(e.x, e.z, .86)), moves: W.speed > 0 };
+      });
+    },
+    wavesMoving() { return { sea: seaMat.uniforms.t.value, waves: waves.count, gulls: GULLS.length, people: WALKERS.length }; },
     monkey() { return { x: monkey.position.x, z: monkey.position.z, hopping: !!hop }; },
     async warm() {
       try { await renderer.compileAsync(world, camera); } catch (e) { /* 舊版瀏覽器：第一幀時再編譯 */ }

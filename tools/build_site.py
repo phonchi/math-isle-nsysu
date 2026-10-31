@@ -67,17 +67,10 @@ def linked(s: str) -> str:
     return esc(s).replace("07-525-2000", '<a href="tel:+88675252000">07-525-2000</a>')
 
 
-def fact_item(x) -> str:
-    if isinstance(x, tuple):
-        name, example = x
-        return f'{esc(name)}<small class="course-eg">自編例：{esc(example)}</small>'
-    return linked(x)
-
-
 def fact_value(v) -> str:
     if isinstance(v, str):
         return f"<dd>{linked(v)}</dd>"
-    rows = "".join(f"<li>{fact_item(x)}</li>" for x in v)
+    rows = "".join(f"<li>{linked(x)}</li>" for x in v)
     return f"<dd><ul>{rows}</ul></dd>"
 
 

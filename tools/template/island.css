@@ -92,7 +92,6 @@ a{color:var(--accent);}
 .hook-next{display:block;margin-top:.25rem;font-weight:700;color:var(--red);}
 .hook-after[hidden]{display:none;}
 .solid-legend{margin-top:.2rem;font-size:.84rem;color:var(--fg2);}
-.course-eg{display:block;margin:.05rem 0 .3rem;font-size:.8rem;line-height:1.5;color:var(--fg3);text-wrap:pretty;}
 .isle-now{display:inline-block;margin-left:.5rem;padding:.05rem .45rem;border-radius:4px;background:var(--gold);color:var(--fg);font:700 .72rem/1.5 var(--sans);vertical-align:.18em;}
 .isl-tag-now{display:grid;place-items:center;padding:0 .4rem;background:var(--gold);color:var(--fg);font-size:.7rem;font-weight:700;}
 

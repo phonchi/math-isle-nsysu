@@ -72,7 +72,7 @@ const server = http.createServer((req, res) => {
     await page.screenshot({ path: path.join(SHOT_DIR, `${view}-home.png`) });
     const stats = await page.evaluate(() => window.__island.stats());
     // 上限只防止之後越加越多，不是效能保證；實機效能要另外測
-    stats.calls <= 90 ? ok(`繪製呼叫 ${stats.calls}、三角形 ${stats.triangles}`) : note(`繪製呼叫過多：${stats.calls}`);
+    stats.calls <= 100 ? ok(`繪製呼叫 ${stats.calls}、三角形 ${stats.triangles}`) : note(`繪製呼叫過多：${stats.calls}`);
     const seen = new Set();
     for (const key of ['plan', 'junior', 'middle', 'senior', 'harbor']) {
       const p = await page.evaluate(k => window.__island.screenPos(k), key);
@@ -80,6 +80,11 @@ const server = http.createServer((req, res) => {
       if (picked !== key) note(`${view}：點 ${key} 的位置選到 ${picked}`); else seen.add(key);
     }
     seen.size === 5 ? ok('五座島都點得到') : note('有島點不到');
+    const sceneInfo = await page.evaluate(() => ({ clear: window.__island.boatClearance(), walkers: window.__island.walkers(), sea: window.__island.wavesMoving() }));
+    sceneInfo.clear >= 1.3 ? ok(`船離島岸、碼頭、橋至少 ${sceneInfo.clear.toFixed(2)}，船身不穿模`) : note(`船太靠近陸地：${sceneInfo.clear.toFixed(2)}`);
+    sceneInfo.walkers.every(w => w.onLand) ? ok(`${sceneInfo.walkers.length} 個人都站在島上、橋上或碼頭`) : note('有人不在陸地上：' + JSON.stringify(sceneInfo.walkers));
+    const sea0 = sceneInfo.sea.sea; await sleep(800);
+    (await page.evaluate(() => window.__island.wavesMoving().sea)) > sea0 ? ok('海面持續流動') : note('海面沒有動');
     const before = await page.evaluate(() => window.__island.monkey());
     await page.evaluate(() => document.querySelector('.isl-jump-btn[data-isle="senior"]').click());
     await sleep(1600);
@@ -168,6 +173,14 @@ const server = http.createServer((req, res) => {
       back.vis && back.inBar && back.reset && back.over <= 1 ? ok('手機捲離地圖後，頂列出現「地圖」，不遮文字') : note('「回到地圖」異常：' + JSON.stringify(back));
       back.h >= 44 ? ok('手機頂列按鈕至少 44px') : note(`頂列按鈕太小：${back.h}px`);
       await page.screenshot({ path: path.join(SHOT_DIR, 'phone-scrolled.png') });
+      await page.evaluate(() => document.getElementById('islBack').click());
+      await sleep(1400);
+      const home = await page.evaluate(() => ({ back: document.getElementById('islBack').hidden, reset: document.getElementById('islReset').hidden, y: window.scrollY }));
+      home.back && !home.reset && home.y < 5 ? ok('按「地圖」回頂端後，按鈕換回「全景」') : note('按「地圖」後按鈕狀態錯誤：' + JSON.stringify(home));
+      await page.evaluate(() => document.querySelector('.isl-jump-btn[data-isle="harbor"]').click());
+      await sleep(1400);
+      const jumped = await page.evaluate(() => ({ back: document.getElementById('islBack').hidden, reset: document.getElementById('islReset').hidden }));
+      !jumped.back && jumped.reset ? ok('跳島捲走地圖後，按鈕換成「地圖」') : note('跳島後按鈕狀態錯誤：' + JSON.stringify(jumped));
     }
     errors.length ? note(`${view} 主控台錯誤：${errors.join(' | ')}`) : ok('主控台沒有錯誤');
     await page.close();

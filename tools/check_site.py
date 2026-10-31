@@ -4,7 +4,6 @@ import hashlib
 import math
 import re
 import sys
-from fractions import Fraction
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -80,12 +79,7 @@ board = {(x, y) for x in range(8) for y in range(8)} - {tuple(c) for c in second
 tiles = [{(x, y), (x + 1, y)} for y in range(8) for x in range(1 if y == 0 else 0, 7 if y == 0 else 8, 2)]
 expect(len(tiles) == 31 and set().union(*tiles) == board and sum(map(len, tiles)) == 62, "第二題：31 張橫放骨牌剛好鋪滿")
 expect(not any("棋盤" in p["q"] for p in M.PUZZLES), "棋盤題只在首屏出現一次")
-# 課名例子的數學
-expect(all(n % 2 == 0 for n in range(4, 400, 4)) and 6 % 2 == 0 and 6 % 4 != 0, "4 的倍數都是偶數，6 是反例")
-expect(sum(1 for a in "HT" for b in "HT" if a != b) == 2, "兩枚硬幣恰好一正一反有 2 種，共 4 種")
-expect(2 + 3 == 5 and 2 * 3 == 6 and all(r * r - 5 * r + 6 == 0 for r in (2, 3)), "x²−5x+6 的兩根和為 5、積為 6")
-expect(Fraction(2 ** 2 - 1, 1) == 3 and (Fraction(11, 10) ** 2 - 1) / Fraction(1, 10) == Fraction(21, 10), "s=t² 的平均變化率為 3 與 2.1")
-expect(all(a * (20 - a) <= 100 for a in range(0, 21)), "周長固定時，正方形面積最大（周長 40 的整數邊驗算）")
+expect("自編例" not in (ROOT / "index.html").read_text(encoding="utf-8") and "自編例" not in (ROOT / "parents.html").read_text(encoding="utf-8"), "沒有課名自編例")
 expect("layer % 2 ? C.gold : C.navy" in scene and "layer % 2 ? '#f5b82e' : '#2c3e7a'" in activities, "燈塔旁的金藍點陣與奇數和互動同規則")
 expect('href="tel:+88675252000"' in (ROOT / "index.html").read_text(encoding="utf-8") and '分機 3802' in M.ISLES[4]["facts"][-1][1], "電話可點撥，分機保留在文字")
 expect((ROOT / "qr.png").read_bytes()[:4] == b"\x89PNG", "投影版的 QR 圖存在")

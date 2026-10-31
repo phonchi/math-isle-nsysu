@@ -17,6 +17,7 @@ function scrollToSection(key) {
   const el = sections.get(key); if (!el) return;
   const behavior = reduceMotion.matches ? 'auto' : 'smooth';
   programmaticUntil = performance.now() + 900;
+  setTimeout(updateBack, 950);
   if (listScrolls()) $('islList').scrollTo({ top: el.offsetTop - 10, behavior });
   else {
     const bar = document.querySelector('.isl-bar').offsetHeight;
@@ -72,6 +73,7 @@ function updateBack() {
 }
 $('islBack').addEventListener('click', () => {
   programmaticUntil = performance.now() + 900;
+  setTimeout(updateBack, 950);
   window.scrollTo({ top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
 });
 
@@ -128,7 +130,7 @@ async function initScene() {
     setCurrent(null); scene.select(null, false); scene.reset();
   });
   canvas.addEventListener('webglcontextlost', e => { e.preventDefault(); if (scene) scene.dispose(); fallback2D('WebGL context lost'); });
-  window.__island = { screenPos: k => scene && scene.screenPos(k), pickAt: (x, y) => scene && scene.pickAt(x, y), stats: () => scene && scene.stats(), monkey: () => scene && scene.monkey() };
+  window.__island = { screenPos: k => scene && scene.screenPos(k), pickAt: (x, y) => scene && scene.pickAt(x, y), stats: () => scene && scene.stats(), monkey: () => scene && scene.monkey(), boatClearance: () => scene && scene.boatClearance(), walkers: () => scene && scene.walkers(), wavesMoving: () => scene && scene.wavesMoving() };
   if (current) scene.select(current, false);
   await scene.warm();
   document.documentElement.classList.remove('gl-pending');
