@@ -17,6 +17,8 @@
 <meta name="twitter:card" content="summary_large_image">
 <title>猜想群島｜中山大學南部高中數學人才培育班導覽</title>
 <script>
+/* ?show 是會場投影版：只留群島、站名和 QR code。 */
+if (/[?&]show(=|&|$)/.test(location.search)) document.documentElement.classList.add('show-mode');
 /* 有 WebGL 才先排 3D 版面。若模組腳本完全無法執行，12 秒後由這裡退回 2D；資訊本身一直可讀。 */
 if (window.WebGLRenderingContext) {
   document.documentElement.classList.add('gl-pending');
@@ -58,7 +60,7 @@ a{color:var(--accent);}
 /* 資訊列表（2D 預設） */
 .isl-list{position:relative;max-width:820px;margin:0 auto;padding:1.2rem 1rem 3rem;}
 .isl-intro{margin-bottom:1rem;}
-.isl-intro p:first-child{font-size:1.04rem;font-weight:600;text-wrap:pretty;}
+.isl-intro p:first-child{font-size:1rem;font-weight:500;text-wrap:pretty;}
 .isl-date{font-size:.78rem;color:var(--fg3);margin-top:.25rem;text-wrap:pretty;}
 .isle{padding:1.05rem 1.1rem 1.1rem;margin-bottom:1rem;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);transition:border-color .25s,box-shadow .25s;}
 .isle.is-current{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent);}
@@ -89,7 +91,7 @@ a{color:var(--accent);}
 .act-btn:disabled{cursor:default;opacity:.65;}
 .act-btn.is-primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
 .act-btn.is-primary:hover{color:var(--on-accent);filter:brightness(1.12);}
-.act-btn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent);}
+.act-btn[aria-pressed="true"],.act-btn[aria-pressed="true"]:disabled{background:var(--accent);border-color:var(--accent);color:var(--on-accent);opacity:1;}
 .act-q{font-weight:700;line-height:1.6;}
 .act-why{margin-top:.5rem;padding-top:.45rem;border-top:1px solid var(--line2);line-height:1.65;color:var(--fg2);}
 .act-why b{color:var(--fg);}
@@ -118,6 +120,9 @@ a{color:var(--accent);}
 .hook .act-row{margin-top:.35rem;}
 .hook .act-btn{min-width:4.2em;}
 .hook-next{display:block;margin-top:.25rem;font-weight:700;color:var(--red);}
+.hook-after[hidden]{display:none;}
+.solid-legend{margin-top:.2rem;font-size:.84rem;color:var(--fg2);}
+.course-eg{display:block;margin:.05rem 0 .3rem;font-size:.8rem;line-height:1.5;color:var(--fg3);text-wrap:pretty;}
 .isle-now{display:inline-block;margin-left:.5rem;padding:.05rem .45rem;border-radius:4px;background:var(--gold);color:var(--fg);font:700 .72rem/1.5 var(--sans);vertical-align:.18em;}
 .isl-tag-now{display:grid;place-items:center;padding:0 .4rem;background:var(--gold);color:var(--fg);font-size:.7rem;font-weight:700;}
 
@@ -149,17 +154,38 @@ a{color:var(--accent);}
 .isl-tag:hover,.isl-tag.is-hover{border-color:var(--accent);}
 .isl-tag.is-current{border-color:var(--red);box-shadow:0 0 0 1px var(--red);z-index:2;}
 .isl-tag.is-off{opacity:0;pointer-events:none;}
-.isl-back{position:fixed;z-index:35;right:.8rem;bottom:calc(.8rem + env(safe-area-inset-bottom));min-height:44px;padding:.3rem .95rem;border-radius:var(--r);border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);font-weight:700;font-size:.88rem;cursor:pointer;box-shadow:0 4px 14px rgba(26,26,46,.3);}
-.isl-back[hidden]{display:none;}
+
+/* 會場投影版（?show）：只留群島、站名和 QR code */
+.show-title,.show-card{display:none;}
+.show-mode body,.show-mode #islCanvas{cursor:none;}
+.show-mode body{overflow:hidden;background:#a2dbe6;}
+.show-mode .isl-bar,.show-mode .isl-list,.show-mode .isl-jumps,.show-mode .isl-drag{display:none !important;}
+.show-mode .isl-main,.show-mode .isl-stage{display:block !important;width:100vw;height:100vh !important;}
+.show-mode .isl-tag{font-size:clamp(1.1rem,1.25vw,1.6rem);pointer-events:none;}
+.show-mode .isl-tag-num{min-width:2.3rem;font-size:1.1rem;}
+.show-mode .isl-tag small{font-size:.8rem;}
+.show-mode .isl-tag-now{font-size:1rem;}
+.show-title{position:fixed;z-index:6;left:3vw;top:4vh;padding:1.6vh 1.8vw;border-radius:10px;color:#fff;background:rgba(26,26,46,.88);}
+.show-title b{display:block;font:900 clamp(2rem,4.6vw,5rem)/1.2 'Noto Serif TC',var(--sans);letter-spacing:.08em;}
+.show-title span{font-size:clamp(1rem,1.75vw,2rem);}
+.show-card{position:fixed;z-index:6;right:3vw;bottom:4vh;flex-direction:column;align-items:center;gap:1vh;padding:1.6vh;border-radius:10px;background:#fff;box-shadow:0 8px 28px rgba(26,26,46,.35);}
+.show-card img{display:block;width:min(30vh,22vw);height:auto;image-rendering:pixelated;}
+.show-card p{max-width:min(30vh,22vw);text-align:center;font-weight:900;font-size:clamp(.95rem,1.35vw,1.6rem);line-height:1.35;}
+.show-mode .show-title{display:block;}
+.show-mode .show-card{display:flex;}
+/* 投影電腦跑不動 3D 時，QR code 放大置中，仍能引導大家掃描 */
+.show-nogl .show-card{right:50%;bottom:50%;transform:translate(50%,50%);}
+.show-nogl .show-card{bottom:45%;}
+.show-nogl .show-card img,.show-nogl .show-card p{width:min(45vh,36vw);max-width:none;}
 
 /* 手機 */
 @media (max-width:767px){
   :root{--bar-h:56px;}
   .isl-bar{padding:.35rem .7rem;gap:.5rem;}
   .isl-brand h1{font-size:1.06rem;}
-  .isl-brand-sub{font-size:.64rem;}
+  .isl-brand-sub{font-size:.7rem;}
   .isl-actions{gap:.3rem;}
-  .isl-btn{padding:.15rem .55rem;font-size:.8rem;}
+  .isl-btn{min-height:44px;padding:.15rem .55rem;font-size:.8rem;}
   .isl-list{padding:.9rem 16px 2.6rem;}
   .isle{padding:.9rem .85rem 1rem;}
   .isle-facts>div{grid-template-columns:1fr;gap:0;}
@@ -167,7 +193,7 @@ a{color:var(--accent);}
   :is(.gl-pending body,body.webgl-ready) .isl-stage{height:50vh;height:50svh;}
   :is(.gl-pending body,body.webgl-ready) .isl-list{padding:.9rem 16px 4.5rem;border-left:none;overflow:visible;}
   .isl-jumps{left:.5rem;top:.5rem;gap:.25rem;}
-  .isl-jump-btn{font-size:.76rem;padding:.1rem .5rem;min-height:34px;}
+  .isl-jump-btn{font-size:.76rem;padding:.1rem .5rem;min-height:44px;}
   .isl-drag{right:.5rem;bottom:.35rem;font-size:.7rem;}
   .isl-tag{font-size:.74rem;}
   .isl-tag small{display:none;}
@@ -198,6 +224,7 @@ a{color:var(--accent);}
     <a class="isl-btn is-strong" href="parents.html">給家長</a>
     <a class="isl-btn" href="https://highschool-math.nsysu.edu.tw/index.php" target="_blank" rel="noopener">官網</a>
     <button type="button" class="isl-btn" id="islReset" hidden>全景</button>
+    <button type="button" class="isl-btn" id="islBack" aria-label="回到地圖" hidden>地圖</button>
   </div>
 </header>
 <main class="isl-main">
@@ -217,11 +244,11 @@ a{color:var(--accent);}
   <nav class="isl-list" id="islList" aria-label="島嶼列表">
     <aside class="hook act" data-activity="board" aria-labelledby="hook-h">
       <h2 class="hook-title" id="hook-h">等開場？和旁邊的人猜一題</h2>
-      <div class="act-body"><p class="act-q">8×8 棋盤去掉左上、右下兩個角，能用 1×2 骨牌剛好鋪滿嗎？</p><p>不能。去掉的兩格同色，剩下的黑白格相差 2 格；每張骨牌一定蓋住一黑一白，所以鋪不滿。</p></div>
+      <div class="act-body"><p class="act-q">8×8 棋盤去掉左上、右下兩個角，能用 1×2 骨牌剛好鋪滿嗎？</p><p>不能。去掉的兩格同色，剩下的黑白格相差 2 格；每張骨牌一定蓋住一黑一白，所以鋪不滿。</p><p class="act-q">那改成去掉左上、右上兩個角呢？</p><p>能。這兩格異色，黑白格一樣多。而且真的鋪得出來：第一排剩 6 格、其他每排 8 格，都是偶數，全部橫著鋪就好。</p></div>
     </aside>
     <div class="isl-intro">
       <p>五座島，兩年路徑，新生從 2 號初級島出發。點一座島，就能看課程、時程和資源，也能順手玩一個小實驗。</p>
-      <p class="isl-date">115 學年度資料，2026 年 10 月整理。本站是導覽頁，不取代正式公告。招生、課表、師資與獎項資訊請以計畫官網與學校公告為準。</p>
+      <p class="isl-date">115 學年度資料，2026 年 10 月整理。本站是導覽頁，不取代正式公告。招生、課表、師資與獎項資訊請以計畫官網與學校公告為準。課名旁的例子由本站自編，只用來說明這類問題的樣子，實際內容以課表為準。</p>
     </div>
     <section class="isle" id="isle-plan" data-isle="plan" aria-labelledby="h-plan">
       <header class="isle-head">
@@ -237,7 +264,7 @@ a{color:var(--accent);}
       </dl>
       <div class="act" data-activity="dots">
         <h3><span class="act-kicker">猜想燈塔</span>奇數加起來，為什麼是平方？</h3>
-        <p class="act-hint"><svg class="monkey" viewBox="0 0 48 48" aria-hidden="true"><circle cx="9" cy="24" r="6" fill="#d29b73"/><circle cx="39" cy="24" r="6" fill="#d29b73"/><circle cx="24" cy="24" r="17" fill="#8d6a4f"/><ellipse cx="24" cy="29" rx="11" ry="9" fill="#e9b794"/><ellipse cx="18" cy="21" rx="6" ry="5.5" fill="#e9b794"/><ellipse cx="30" cy="21" rx="6" ry="5.5" fill="#e9b794"/><circle cx="18" cy="22" r="2" fill="#2b2420"/><circle cx="30" cy="22" r="2" fill="#2b2420"/><path d="M20 31 Q24 34 28 31" stroke="#7c4a33" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg><span>先別急著背公式。看到規律時，再多問一句：為什麼？</span></p>
+        <p class="act-hint"><svg class="monkey" viewBox="0 0 48 48" aria-hidden="true"><circle cx="9" cy="24" r="6" fill="#d29b73"/><circle cx="39" cy="24" r="6" fill="#d29b73"/><circle cx="24" cy="24" r="17" fill="#8d6a4f"/><ellipse cx="24" cy="29" rx="11" ry="9" fill="#e9b794"/><ellipse cx="18" cy="21" rx="6" ry="5.5" fill="#e9b794"/><ellipse cx="30" cy="21" rx="6" ry="5.5" fill="#e9b794"/><circle cx="18" cy="22" r="2" fill="#2b2420"/><circle cx="30" cy="22" r="2" fill="#2b2420"/><path d="M20 31 Q24 34 28 31" stroke="#7c4a33" stroke-width="1.6" fill="none" stroke-linecap="round"/></svg><span>燈塔旁那片金藍點陣，就是這一題。看到規律時，再多問一句：為什麼？</span></p>
         <div class="act-body"><p>1 + 3 + 5 + … + (2n−1) = n²。在 n×n 的點陣外圍補上一圈 L 形，就得到 (n+1)×(n+1)。</p></div>
       </div>
       <ul class="isle-links"><li><a href="https://highschool-math.nsysu.edu.tw/p/412-1186-123.php?Lang=zh-tw" target="_blank" rel="noopener">計畫簡介與沿革</a></li><li><a href="https://highschool-math.nsysu.edu.tw/p/412-1186-23602.php?Lang=zh-tw" target="_blank" rel="noopener">計畫願景</a></li><li><a href="https://highschool-math.nsysu.edu.tw/index.php" target="_blank" rel="noopener">計畫官網</a></li></ul>
@@ -249,8 +276,8 @@ a{color:var(--accent);}
       </header>
       <p class="isle-lead">第一階段練習把話說精確，熟悉不同的數學對象與推理方法。</p>
       <dl class="isle-facts">
-        <div><dt>高一上學期</dt><dd><ul><li>集合與邏輯</li><li>離散數學</li></ul></dd></div>
-        <div><dt>高一下學期</dt><dd><ul><li>基礎數學</li><li>初等數論</li></ul></dd></div>
+        <div><dt>高一上學期</dt><dd><ul><li>集合與邏輯<small class="course-eg">自編例：「是 4 的倍數」能推出「是偶數」，反過來呢？6 是反例。</small></li><li>離散數學<small class="course-eg">自編例：不一個個列出來，怎麼數 12 人兩兩握手幾次？</small></li></ul></dd></div>
+        <div><dt>高一下學期</dt><dd><ul><li>基礎數學</li><li>初等數論<small class="course-eg">自編例：為什麼三個連續整數的乘積一定是 6 的倍數？</small></li></ul></dd></div>
         <div><dt>上課時間</dt><dd>大多在週日，約兩週一次，以實際課表為準。</dd></div>
         <div><dt>下一階段</dt><dd>116 年 6 月依單元測驗與數學競試總成績決定晉級，出席率與演習課為輔。</dd></div>
       </dl>
@@ -268,8 +295,8 @@ a{color:var(--accent);}
       </header>
       <p class="isle-lead">課程加入機率統計與程式設計，再進入函數論與方程式論。</p>
       <dl class="isle-facts">
-        <div><dt>暑期</dt><dd><ul><li>機率統計</li><li>程式設計（Python 或 C++，以實際安排為準）</li></ul></dd></div>
-        <div><dt>高二上學期</dt><dd><ul><li>函數論</li><li>方程式論</li></ul></dd></div>
+        <div><dt>暑期</dt><dd><ul><li>機率統計<small class="course-eg">自編例：擲兩枚公正硬幣，恰好一正一反的機率是多少？</small></li><li>程式設計（Python 或 C++，以實際安排為準）<small class="course-eg">自編例：讓電腦驗算前 100 個奇數和，再想想：算得再多，算證明嗎？</small></li></ul></dd></div>
+        <div><dt>高二上學期</dt><dd><ul><li>函數論</li><li>方程式論<small class="course-eg">自編例：不解 x² − 5x + 6 = 0，能先知道兩根的和與積嗎？</small></li></ul></dd></div>
         <div><dt>下一階段</dt><dd>117 年 1 月決定晉級高級班名單。晉級中級班後可申請初級班修業證明。</dd></div>
       </dl>
       <div class="act" data-activity="primes">
@@ -286,8 +313,8 @@ a{color:var(--accent);}
       </header>
       <p class="isle-lead">課程包含微積分、解析幾何與數學軟體，並銜接向量函數與多變數函數。</p>
       <dl class="isle-facts">
-        <div><dt>高二下學期</dt><dd><ul><li>微積分</li><li>不等式</li></ul></dd></div>
-        <div><dt>暑期</dt><dd><ul><li>解析幾何</li><li>數學軟體 SageMath</li><li>銜接教學：向量函數、多變數函數</li></ul></dd></div>
+        <div><dt>高二下學期</dt><dd><ul><li>微積分<small class="course-eg">自編例：s(t) = t² 從 t = 1 到 2 的平均變化率是 3，到 1.1 是 2.1；再縮短，會逼近多少？</small></li><li>不等式<small class="course-eg">自編例：周長固定的矩形，什麼時候面積最大？</small></li></ul></dd></div>
+        <div><dt>暑期</dt><dd><ul><li>解析幾何<small class="course-eg">自編例：怎麼用座標，把兩直線的交點變成計算？</small></li><li>數學軟體 SageMath</li><li>銜接教學：向量函數、多變數函數</li></ul></dd></div>
         <div><dt>結業</dt><dd>預計 117 年 9 月中旬結業。晉級高級班可申請通過必修課程之結業證書，通過高級班則頒予通過必、選修課程之結業證書。</dd></div>
       </dl>
       <div class="act" data-activity="solids">
@@ -310,7 +337,7 @@ a{color:var(--accent);}
         <div><dt>獎學金</dt><dd>成績優異的學員進入中山應數系就讀，可申請校內獎學金，條件以學校公告為準。</dd></div>
         <div><dt>遇到颱風</dt><dd>高雄市公告全市當天或半天停止上課時，該次課程順延補課。</dd></div>
         <div><dt>交通</dt><dd><ul><li>捷運：哈瑪星站 2 號出口，轉公車橘 1 至行政大樓</li><li>公車：248 路（高雄車站）、50 路（文化中心）到學校隧道口</li><li>開學當日在理學院（1005 國際會議廳、理 2001 教室）；之後的上課地點以課表為準</li></ul></dd></div>
-        <div><dt>聯絡</dt><dd>應用數學系 07-525-2000 分機 3802；高雄市鼓山區蓮海路 70 號</dd></div>
+        <div><dt>聯絡</dt><dd>應用數學系 <a href="tel:+88675252000">07-525-2000</a> 分機 3802；高雄市鼓山區蓮海路 70 號</dd></div>
       </dl>
       <div class="act" data-activity="puzzles">
         <h3><span class="act-kicker">補給港</span>隨手一題</h3>
@@ -321,11 +348,15 @@ a{color:var(--accent);}
     </section>
     <footer class="isl-foot">
       <p>中山大學南部高中數學人才培育班導覽。115 學年度資料，2026 年 10 月整理。</p>
-      <p>本站是導覽頁，不取代正式公告。招生、課表、師資與獎項資訊請以計畫官網與學校公告為準。</p>
+      <p>本站是導覽頁，不取代正式公告。招生、課表、師資與獎項資訊請以計畫官網與學校公告為準。課名旁的例子由本站自編，只用來說明這類問題的樣子，實際內容以課表為準。</p>
     </footer>
   </nav>
 </main>
-<button type="button" class="isl-back" id="islBack" hidden>回到地圖</button>
+<div class="show-title" aria-hidden="true"><b>猜想群島</b><span>中山大學南部高中數學人才培育班導覽</span></div>
+<aside class="show-card" aria-label="用手機掃描 QR code 開啟網站">
+  <img src="qr.png" width="300" height="300" alt="猜想群島網址的 QR code" loading="lazy">
+  <p>掃一下，和旁邊的人猜一題</p>
+</aside>
 <script type="application/json" id="island-data">
 {
  "isles": [
@@ -402,12 +433,41 @@ a{color:var(--accent);}
  ],
  "featured": {
   "title": "等開場？和旁邊的人猜一題",
-  "q": "8×8 棋盤去掉左上、右下兩個角，能用 1×2 骨牌剛好鋪滿嗎？",
   "yes": "能",
   "no": "不能",
-  "answer": false,
-  "why": "去掉的兩格同色，剩下的黑白格相差 2 格；每張骨牌一定蓋住一黑一白，所以鋪不滿。",
-  "prompt": "能用一句話講給旁邊的人聽嗎？"
+  "prompt": "能用一句話講給旁邊的人聽嗎？",
+  "rounds": [
+   {
+    "q": "8×8 棋盤去掉左上、右下兩個角，能用 1×2 骨牌剛好鋪滿嗎？",
+    "answer": false,
+    "gone": [
+     [
+      0,
+      0
+     ],
+     [
+      7,
+      7
+     ]
+    ],
+    "why": "去掉的兩格同色，剩下的黑白格相差 2 格；每張骨牌一定蓋住一黑一白，所以鋪不滿。"
+   },
+   {
+    "q": "那改成去掉左上、右上兩個角呢？",
+    "answer": true,
+    "gone": [
+     [
+      0,
+      0
+     ],
+     [
+      7,
+      0
+     ]
+    ],
+    "why": "這兩格異色，黑白格一樣多。而且真的鋪得出來：第一排剩 6 格、其他每排 8 格，都是偶數，全部橫著鋪就好。"
+   }
+  ]
  }
 }
 </script>
@@ -479,13 +539,22 @@ window.addEventListener('scroll', queueSpy, { passive: true });
 
 // 手機上地圖捲出畫面後，提供回到地圖的按鈕
 function updateBack() {
-  const stage = $('islStage');
-  $('islBack').hidden = !(scene && !listScrolls() && stage.getBoundingClientRect().bottom < 40);
+  const stage = $('islStage'), bar = document.querySelector('.isl-bar').offsetHeight;
+  const show = !!scene && !listScrolls() && stage.getBoundingClientRect().bottom < bar;
+  $('islBack').hidden = !show;
+  $('islReset').hidden = !scene || show;
 }
 $('islBack').addEventListener('click', () => {
   programmaticUntil = performance.now() + 900;
   window.scrollTo({ top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
 });
+
+/* 會場投影版：盡量不讓投影電腦進入螢幕保護。瀏覽器不支援時就略過 */
+if (document.documentElement.classList.contains('show-mode') && navigator.wakeLock) {
+  const keepAwake = () => { if (!document.hidden) navigator.wakeLock.request('screen').catch(() => {}); };
+  keepAwake();
+  document.addEventListener('visibilitychange', keepAwake);
+}
 
 /* ── 3D 場景（可選）── */
 function hasWebGL() {
@@ -496,9 +565,13 @@ function hasWebGL() {
 }
 function fallback2D(reason) {
   abandoned = true;
+  // 手機上地圖消失時，頁面內容會上移；已經捲下去讀的人，要留在原來讀的位置
+  const keep = !listScrolls() && window.scrollY > 0, before = $('islList').getBoundingClientRect().top;
   document.documentElement.classList.remove('gl-pending');
+  document.documentElement.classList.add('show-nogl');
   document.body.classList.remove('webgl-ready');
   $('islStage').hidden = true; $('islReset').hidden = true; $('islBack').hidden = true;
+  if (keep) window.scrollBy({ top: $('islList').getBoundingClientRect().top - before, behavior: 'instant' });
   scene = null;
   console.info('3D 群島未啟用，改用 2D 列表：' + reason);
 }
@@ -553,29 +626,45 @@ const ACTIVITIES = {
     svg.setAttribute('viewBox', '0 0 80 80');
     svg.setAttribute('class', 'board-svg');
     svg.setAttribute('role', 'img');
-    svg.setAttribute('aria-label', '8 乘 8 的黑白棋盤，左上和右下兩個角格已去掉');
+    const cells = [];
     for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
       const r = document.createElementNS(NS, 'rect');
-      const removed = (x === 0 && y === 0) || (x === 7 && y === 7);
       r.setAttribute('x', x * 10); r.setAttribute('y', y * 10); r.setAttribute('width', 10); r.setAttribute('height', 10);
-      r.setAttribute('class', removed ? 'is-gone' : (x + y) % 2 ? 'is-light' : 'is-dark');
-      svg.appendChild(r);
+      svg.appendChild(r); cells.push({ r, x, y });
     }
-    const why = el('p', { className: 'act-why', hidden: true });
+    const q = el('p', { className: 'act-q' }), row = el('div', { className: 'act-row' });
+    const why = el('p', { className: 'act-why' });
     why.setAttribute('aria-live', 'polite');
-    const row = el('div', { className: 'act-row' });
-    [[f.yes, true], [f.no, false]].forEach(([label, value]) => {
-      const b = el('button', { type: 'button', className: 'act-btn', textContent: label });
-      b.addEventListener('click', () => {
-        row.querySelectorAll('button').forEach(x => { x.disabled = true; });
-        b.setAttribute('aria-pressed', 'true');
-        why.replaceChildren(el('b', { textContent: value === f.answer ? '猜對了。' : `答案是「${f.answer ? f.yes : f.no}」。` }), ` ${f.why}`, el('span', { className: 'hook-next', textContent: f.prompt }));
-        why.hidden = false;
+    const after = el('div', { className: 'act-row hook-after' });
+    const wordOf = v => (v ? f.yes : f.no);
+    function draw(i) {
+      const round = f.rounds[i];
+      cells.forEach(({ r, x, y }) => r.setAttribute('class', round.gone.some(g => g[0] === x && g[1] === y) ? 'is-gone' : (x + y) % 2 ? 'is-light' : 'is-dark'));
+      svg.setAttribute('aria-label', `8 乘 8 的黑白棋盤，去掉${i ? '左上和右上' : '左上和右下'}兩個角格`);
+      q.textContent = round.q; why.hidden = true; after.hidden = true;
+      const buttons = [true, false].map(value => {
+        const b = el('button', { type: 'button', className: 'act-btn', textContent: wordOf(value) });
+        b.addEventListener('click', () => {
+          buttons.forEach(x => { x.disabled = true; });
+          b.setAttribute('aria-pressed', 'true');
+          const verdict = value === round.answer ? `猜對了，答案是「${wordOf(round.answer)}」。` : `你選「${wordOf(value)}」，答案是「${wordOf(round.answer)}」。`;
+          why.replaceChildren(el('b', { textContent: verdict }), ` ${round.why}`, el('span', { className: 'hook-next', textContent: f.prompt }));
+          const again = el('button', { type: 'button', className: 'act-btn', textContent: '換人猜' });
+          again.addEventListener('click', () => draw(0));
+          after.replaceChildren(again);
+          if (i + 1 < f.rounds.length) {
+            const next = el('button', { type: 'button', className: 'act-btn is-primary', textContent: '再一題' });
+            next.addEventListener('click', () => draw(i + 1));
+            after.prepend(next);
+          }
+          why.hidden = false; after.hidden = false;
+        });
+        return b;
       });
-      row.append(b);
-    });
-    const text = el('div', {}, el('p', { className: 'act-q', textContent: f.q }), row);
-    body.replaceChildren(el('div', { className: 'hook-row' }, svg, text), why);
+      row.replaceChildren(...buttons);
+    }
+    draw(0);
+    body.replaceChildren(el('div', { className: 'hook-row' }, svg, el('div', {}, q, row)), why, after);
   },
 
   /* 奇數和：每按一次，外圍多一圈 L */
@@ -733,7 +822,8 @@ const ACTIVITIES = {
     canvas.addEventListener('pointerup', stop); canvas.addEventListener('pointercancel', stop);
     if ('IntersectionObserver' in window) new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) start(); }).observe(canvas);
     document.addEventListener('visibilitychange', start);
-    body.replaceChildren(canvas, eq, row, table);
+    const legend = el('p', { className: 'solid-legend', textContent: 'V 是頂點數，E 是邊數，F 是面數。' });
+    body.replaceChildren(canvas, eq, legend, row, table);
     choose(cur);
   },
 
@@ -1146,6 +1236,9 @@ function buildWorld(THREE, addons, renderer, stage, canvas) {
   controls.enableDamping = motion(); controls.dampingFactor = .08;
   controls.rotateSpeed = .6; controls.zoomSpeed = 1.1;
   controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_ROTATE };
+  // 會場投影版沒有人操作，讓群島慢慢轉；不動畫偏好優先
+  controls.autoRotate = document.documentElement.classList.contains('show-mode') && motion();
+  controls.autoRotateSpeed = .35;
   camera.position.set(HOME.x + Math.sin(POLAR) * Math.sin(FACE) * DIST, Math.cos(POLAR) * DIST, HOME.z + Math.sin(POLAR) * Math.cos(FACE) * DIST);
   camera.lookAt(HOME); camera.updateMatrixWorld();
   const RV = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0), UV = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 1), FV = camera.getWorldDirection(new THREE.Vector3());

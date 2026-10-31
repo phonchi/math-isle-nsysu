@@ -62,10 +62,22 @@ def vendor_stamp() -> str:
     return h.hexdigest()[:10]
 
 
+def linked(s: str) -> str:
+    """跳脫文字，並讓系辦電話可以直接點撥。分機留在文字裡，由撥號的人自己輸入。"""
+    return esc(s).replace("07-525-2000", '<a href="tel:+88675252000">07-525-2000</a>')
+
+
+def fact_item(x) -> str:
+    if isinstance(x, tuple):
+        name, example = x
+        return f'{esc(name)}<small class="course-eg">自編例：{esc(example)}</small>'
+    return linked(x)
+
+
 def fact_value(v) -> str:
     if isinstance(v, str):
-        return f"<dd>{esc(v)}</dd>"
-    rows = "".join(f"<li>{esc(x)}</li>" for x in v)
+        return f"<dd>{linked(v)}</dd>"
+    rows = "".join(f"<li>{fact_item(x)}</li>" for x in v)
     return f"<dd><ul>{rows}</ul></dd>"
 
 
@@ -88,7 +100,7 @@ def parent_today() -> str:
         key, name = item["target"]
         isle = next(i for i in M.ISLES if i["key"] == key)
         text = item.get("text") or dict(isle["facts"])[name]
-        rows.append(f'    <li><a href="#{fact_id(key, name)}">{esc(item["title"])}</a><span>{esc(text)}</span></li>')
+        rows.append(f'    <li><a class="today-go" href="#{fact_id(key, name)}">{esc(item["title"])}</a><span>{linked(text)}</span></li>')
     return '  <nav class="today" aria-labelledby="today-h">\n    <h2 id="today-h">今天先找這三件事</h2>\n    <ul>\n' + "\n".join(rows) + "\n    </ul>\n  </nav>"
 
 
@@ -109,10 +121,10 @@ def og_tags(title: str, description: str, page: str) -> str:
 
 def featured() -> str:
     f = M.FEATURED
-    verdict = f["yes"] if f["answer"] else f["no"]
+    static = "".join(f'<p class="act-q">{esc(r["q"])}</p><p>{esc(f["yes"] if r["answer"] else f["no"])}。{esc(r["why"])}</p>' for r in f["rounds"])
     return f"""    <aside class="hook act" data-activity="board" aria-labelledby="hook-h">
       <h2 class="hook-title" id="hook-h">{esc(f['title'])}</h2>
-      <div class="act-body"><p class="act-q">{esc(f['q'])}</p><p>{esc(verdict)}。{esc(f['why'])}</p></div>
+      <div class="act-body">{static}</div>
     </aside>"""
 
 
@@ -169,6 +181,8 @@ def build_index() -> str:
 {og_tags(f"{TITLE}｜{SUB}", INDEX_DESC, "")}
 <title>{TITLE}｜{SUB}</title>
 <script>
+/* ?show 是會場投影版：只留群島、站名和 QR code。 */
+if (/[?&]show(=|&|$)/.test(location.search)) document.documentElement.classList.add('show-mode');
 /* 有 WebGL 才先排 3D 版面。若模組腳本完全無法執行，12 秒後由這裡退回 2D；資訊本身一直可讀。 */
 if (window.WebGLRenderingContext) {{
   document.documentElement.classList.add('gl-pending');
@@ -194,6 +208,7 @@ if (window.WebGLRenderingContext) {{
     <a class="isl-btn is-strong" href="parents.html">給家長</a>
     <a class="isl-btn" href="{esc(M.URLS['official'][1])}" target="_blank" rel="noopener">官網</a>
     <button type="button" class="isl-btn" id="islReset" hidden>全景</button>
+    <button type="button" class="isl-btn" id="islBack" aria-label="回到地圖" hidden>地圖</button>
   </div>
 </header>
 <main class="isl-main">
@@ -219,7 +234,11 @@ if (window.WebGLRenderingContext) {{
     </footer>
   </nav>
 </main>
-<button type="button" class="isl-back" id="islBack" hidden>回到地圖</button>
+<div class="show-title" aria-hidden="true"><b>{TITLE}</b><span>{SUB}</span></div>
+<aside class="show-card" aria-label="用手機掃描 QR code 開啟網站">
+  <img src="qr.png" width="300" height="300" alt="猜想群島網址的 QR code" loading="lazy">
+  <p>掃一下，和旁邊的人猜一題</p>
+</aside>
 <script type="application/json" id="island-data">
 {data_json}
 </script>

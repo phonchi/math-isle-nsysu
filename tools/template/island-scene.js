@@ -358,6 +358,9 @@ function buildWorld(THREE, addons, renderer, stage, canvas) {
   controls.enableDamping = motion(); controls.dampingFactor = .08;
   controls.rotateSpeed = .6; controls.zoomSpeed = 1.1;
   controls.touches = { ONE: THREE.TOUCH.ROTATE, TWO: THREE.TOUCH.DOLLY_ROTATE };
+  // 會場投影版沒有人操作，讓群島慢慢轉；不動畫偏好優先
+  controls.autoRotate = document.documentElement.classList.contains('show-mode') && motion();
+  controls.autoRotateSpeed = .35;
   camera.position.set(HOME.x + Math.sin(POLAR) * Math.sin(FACE) * DIST, Math.cos(POLAR) * DIST, HOME.z + Math.sin(POLAR) * Math.cos(FACE) * DIST);
   camera.lookAt(HOME); camera.updateMatrixWorld();
   const RV = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0), UV = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 1), FV = camera.getWorldDirection(new THREE.Vector3());

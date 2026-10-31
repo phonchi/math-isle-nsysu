@@ -14,29 +14,45 @@ const ACTIVITIES = {
     svg.setAttribute('viewBox', '0 0 80 80');
     svg.setAttribute('class', 'board-svg');
     svg.setAttribute('role', 'img');
-    svg.setAttribute('aria-label', '8 乘 8 的黑白棋盤，左上和右下兩個角格已去掉');
+    const cells = [];
     for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
       const r = document.createElementNS(NS, 'rect');
-      const removed = (x === 0 && y === 0) || (x === 7 && y === 7);
       r.setAttribute('x', x * 10); r.setAttribute('y', y * 10); r.setAttribute('width', 10); r.setAttribute('height', 10);
-      r.setAttribute('class', removed ? 'is-gone' : (x + y) % 2 ? 'is-light' : 'is-dark');
-      svg.appendChild(r);
+      svg.appendChild(r); cells.push({ r, x, y });
     }
-    const why = el('p', { className: 'act-why', hidden: true });
+    const q = el('p', { className: 'act-q' }), row = el('div', { className: 'act-row' });
+    const why = el('p', { className: 'act-why' });
     why.setAttribute('aria-live', 'polite');
-    const row = el('div', { className: 'act-row' });
-    [[f.yes, true], [f.no, false]].forEach(([label, value]) => {
-      const b = el('button', { type: 'button', className: 'act-btn', textContent: label });
-      b.addEventListener('click', () => {
-        row.querySelectorAll('button').forEach(x => { x.disabled = true; });
-        b.setAttribute('aria-pressed', 'true');
-        why.replaceChildren(el('b', { textContent: value === f.answer ? '猜對了。' : `答案是「${f.answer ? f.yes : f.no}」。` }), ` ${f.why}`, el('span', { className: 'hook-next', textContent: f.prompt }));
-        why.hidden = false;
+    const after = el('div', { className: 'act-row hook-after' });
+    const wordOf = v => (v ? f.yes : f.no);
+    function draw(i) {
+      const round = f.rounds[i];
+      cells.forEach(({ r, x, y }) => r.setAttribute('class', round.gone.some(g => g[0] === x && g[1] === y) ? 'is-gone' : (x + y) % 2 ? 'is-light' : 'is-dark'));
+      svg.setAttribute('aria-label', `8 乘 8 的黑白棋盤，去掉${i ? '左上和右上' : '左上和右下'}兩個角格`);
+      q.textContent = round.q; why.hidden = true; after.hidden = true;
+      const buttons = [true, false].map(value => {
+        const b = el('button', { type: 'button', className: 'act-btn', textContent: wordOf(value) });
+        b.addEventListener('click', () => {
+          buttons.forEach(x => { x.disabled = true; });
+          b.setAttribute('aria-pressed', 'true');
+          const verdict = value === round.answer ? `猜對了，答案是「${wordOf(round.answer)}」。` : `你選「${wordOf(value)}」，答案是「${wordOf(round.answer)}」。`;
+          why.replaceChildren(el('b', { textContent: verdict }), ` ${round.why}`, el('span', { className: 'hook-next', textContent: f.prompt }));
+          const again = el('button', { type: 'button', className: 'act-btn', textContent: '換人猜' });
+          again.addEventListener('click', () => draw(0));
+          after.replaceChildren(again);
+          if (i + 1 < f.rounds.length) {
+            const next = el('button', { type: 'button', className: 'act-btn is-primary', textContent: '再一題' });
+            next.addEventListener('click', () => draw(i + 1));
+            after.prepend(next);
+          }
+          why.hidden = false; after.hidden = false;
+        });
+        return b;
       });
-      row.append(b);
-    });
-    const text = el('div', {}, el('p', { className: 'act-q', textContent: f.q }), row);
-    body.replaceChildren(el('div', { className: 'hook-row' }, svg, text), why);
+      row.replaceChildren(...buttons);
+    }
+    draw(0);
+    body.replaceChildren(el('div', { className: 'hook-row' }, svg, el('div', {}, q, row)), why, after);
   },
 
   /* 奇數和：每按一次，外圍多一圈 L */
@@ -194,7 +210,8 @@ const ACTIVITIES = {
     canvas.addEventListener('pointerup', stop); canvas.addEventListener('pointercancel', stop);
     if ('IntersectionObserver' in window) new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) start(); }).observe(canvas);
     document.addEventListener('visibilitychange', start);
-    body.replaceChildren(canvas, eq, row, table);
+    const legend = el('p', { className: 'solid-legend', textContent: 'V 是頂點數，E 是邊數，F 是面數。' });
+    body.replaceChildren(canvas, eq, legend, row, table);
     choose(cur);
   },
 

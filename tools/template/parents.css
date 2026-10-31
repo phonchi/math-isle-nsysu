@@ -9,7 +9,9 @@ header p{color:var(--fg2);font-size:.92rem;}
 .today{background:#fff8e1;border:2px solid #f5b82e;border-radius:8px;padding:1rem 1.2rem;}
 .today ul{list-style:none;margin-top:.4rem;}
 .today li{padding:.45rem 0;border-top:1px solid var(--line);}
-.today a{display:block;color:var(--accent);font-weight:700;min-height:28px;}
+.today-go{display:block;color:var(--accent);font-weight:700;min-height:28px;}
+a[href^="tel:"]{color:var(--accent);}
+.course-eg{display:block;margin:.05rem 0 .3rem;font-size:.86rem;line-height:1.55;color:var(--fg2);text-wrap:pretty;}
 .today span{display:block;font-size:.95rem;text-wrap:pretty;}
 dl>div:target{background:#fff8e1;}
 dl>div{scroll-margin-top:.75rem;}

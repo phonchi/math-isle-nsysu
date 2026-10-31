@@ -65,13 +65,22 @@ window.addEventListener('scroll', queueSpy, { passive: true });
 
 // 手機上地圖捲出畫面後，提供回到地圖的按鈕
 function updateBack() {
-  const stage = $('islStage');
-  $('islBack').hidden = !(scene && !listScrolls() && stage.getBoundingClientRect().bottom < 40);
+  const stage = $('islStage'), bar = document.querySelector('.isl-bar').offsetHeight;
+  const show = !!scene && !listScrolls() && stage.getBoundingClientRect().bottom < bar;
+  $('islBack').hidden = !show;
+  $('islReset').hidden = !scene || show;
 }
 $('islBack').addEventListener('click', () => {
   programmaticUntil = performance.now() + 900;
   window.scrollTo({ top: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
 });
+
+/* 會場投影版：盡量不讓投影電腦進入螢幕保護。瀏覽器不支援時就略過 */
+if (document.documentElement.classList.contains('show-mode') && navigator.wakeLock) {
+  const keepAwake = () => { if (!document.hidden) navigator.wakeLock.request('screen').catch(() => {}); };
+  keepAwake();
+  document.addEventListener('visibilitychange', keepAwake);
+}
 
 /* ── 3D 場景（可選）── */
 function hasWebGL() {
@@ -82,9 +91,13 @@ function hasWebGL() {
 }
 function fallback2D(reason) {
   abandoned = true;
+  // 手機上地圖消失時，頁面內容會上移；已經捲下去讀的人，要留在原來讀的位置
+  const keep = !listScrolls() && window.scrollY > 0, before = $('islList').getBoundingClientRect().top;
   document.documentElement.classList.remove('gl-pending');
+  document.documentElement.classList.add('show-nogl');
   document.body.classList.remove('webgl-ready');
   $('islStage').hidden = true; $('islReset').hidden = true; $('islBack').hidden = true;
+  if (keep) window.scrollBy({ top: $('islList').getBoundingClientRect().top - before, behavior: 'instant' });
   scene = null;
   console.info('3D 群島未啟用，改用 2D 列表：' + reason);
 }

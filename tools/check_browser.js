@@ -100,13 +100,25 @@ const server = http.createServer((req, res) => {
     const acts = await page.evaluate(async () => {
       const out = {};
       const hook = document.querySelector('[data-activity=board]');
-      out.hookRects = hook.querySelectorAll('svg rect').length;
-      out.hookGone = hook.querySelectorAll('svg rect.is-gone').length;
-      out.hookDark = hook.querySelectorAll('svg rect.is-dark').length;
-      out.hookLight = hook.querySelectorAll('svg rect.is-light').length;
+      const counts = () => ['is-gone', 'is-dark', 'is-light'].map(c => hook.querySelectorAll(`svg rect.${c}`).length).join();
+      const choices = () => hook.querySelectorAll('.hook-row .act-btn');
+      const after = t => [...hook.querySelectorAll('.hook-after .act-btn')].find(b => b.textContent === t);
+      out.hookFirst = counts();
       out.hookBefore = hook.querySelector('.act-why').hidden;
-      hook.querySelectorAll('.act-row button')[1].click();
+      choices()[0].click();
+      out.hookWrong = hook.querySelector('.act-why').textContent;
+      out.hookOpacity = getComputedStyle(choices()[0]).opacity;
+      after('換人猜').click();
+      out.hookReset = hook.querySelector('.act-why').hidden && !choices()[1].disabled;
+      choices()[1].click();
       out.hookWhy = hook.querySelector('.act-why').textContent;
+      after('再一題').click();
+      out.hookSecond = counts();
+      choices()[0].click();
+      out.hookSecondWhy = hook.querySelector('.act-why').textContent;
+      out.hookNoMore = !after('再一題') && !!after('換人猜');
+      after('換人猜').click();
+      out.hookBack = counts();
       out.hookNow = !!document.querySelector('.isl-tag-now') && !!document.querySelector('#isle-junior .isle-now');
       out.primesDefault = document.querySelector('[data-activity=primes] .act-eq').textContent;
       const dots = document.querySelector('[data-activity=dots]');
@@ -130,8 +142,10 @@ const server = http.createServer((req, res) => {
       out.puzzleOpen = !p.querySelector('.act-why').hidden;
       return out;
     });
-    acts.hookRects === 64 && acts.hookGone === 2 && acts.hookDark === 30 && acts.hookLight === 32 ? ok('首屏棋盤：去掉兩個同色角後為 30 比 32') : note(`首屏棋盤錯誤：${JSON.stringify(acts)}`);
-    acts.hookBefore && acts.hookWhy.startsWith('猜對了') && acts.hookWhy.includes('旁邊的人') ? ok('首屏題作答後才顯示理由') : note('首屏題互動失敗：' + acts.hookWhy);
+    acts.hookFirst === '2,30,32' && acts.hookSecond === '2,31,31' && acts.hookBack === '2,30,32' ? ok('首屏棋盤：第一題 30 比 32，第二題 31 比 31，換人猜回第一題') : note(`首屏棋盤錯誤：${JSON.stringify(acts)}`);
+    acts.hookBefore && acts.hookWrong.startsWith('你選「能」，答案是「不能」') && acts.hookWhy.startsWith('猜對了，答案是「不能」') && acts.hookWhy.includes('旁邊的人') ? ok('首屏題作答後才顯示理由，猜錯也講清楚') : note('首屏題互動失敗：' + acts.hookWhy);
+    acts.hookOpacity === '1' ? ok('選過的答案不再變灰') : note('選過的答案仍是半透明：' + acts.hookOpacity);
+    acts.hookReset && acts.hookSecondWhy.startsWith('猜對了，答案是「能」') && acts.hookNoMore ? ok('換人猜與第二題正常') : note('換人猜或第二題失敗：' + JSON.stringify(acts));
     acts.hookNow ? ok('初級島的資訊卡與 3D 標籤都有「你在這裡」') : note('缺「你在這裡」');
     acts.primesDefault === '8! 含 4 + 2 + 1 = 7 個因數 2' ? ok('滑桿預設：' + acts.primesDefault) : note('滑桿預設錯誤：' + acts.primesDefault);
     acts.dots.endsWith('= 9 = 3²') ? ok('點陣互動：' + acts.dots) : note('點陣結果錯誤：' + acts.dots);
@@ -147,8 +161,13 @@ const server = http.createServer((req, res) => {
     }
     if (view === 'phone') {
       await page.evaluate(() => window.scrollTo(0, 1800)); await sleep(500);
-      const vis = await page.evaluate(() => !document.getElementById('islBack').hidden);
-      vis ? ok('手機捲離地圖後出現「回到地圖」') : note('手機沒有出現「回到地圖」');
+      const back = await page.evaluate(() => {
+        const b = document.getElementById('islBack');
+        return { vis: !b.hidden, inBar: !!b.closest('.isl-bar'), reset: document.getElementById('islReset').hidden, h: Math.min(...[...document.querySelectorAll('.isl-btn:not([hidden])')].map(x => x.offsetHeight)), over: document.documentElement.scrollWidth - document.documentElement.clientWidth };
+      });
+      back.vis && back.inBar && back.reset && back.over <= 1 ? ok('手機捲離地圖後，頂列出現「地圖」，不遮文字') : note('「回到地圖」異常：' + JSON.stringify(back));
+      back.h >= 44 ? ok('手機頂列按鈕至少 44px') : note(`頂列按鈕太小：${back.h}px`);
+      await page.screenshot({ path: path.join(SHOT_DIR, 'phone-scrolled.png') });
     }
     errors.length ? note(`${view} 主控台錯誤：${errors.join(' | ')}`) : ok('主控台沒有錯誤');
     await page.close();
@@ -159,9 +178,16 @@ const server = http.createServer((req, res) => {
     console.log(`▶ ${mode} · ${view}`);
     const t0 = Date.now();
     const { page, errors } = await open(mode, view);
+    // 手機慢網：讀者已捲到島嶼資訊時退回 2D，讀的位置不能跳
+    const held = mode === 'hang' && view === 'phone';
+    const topBefore = held ? await page.evaluate(() => { window.scrollTo({ top: 900, behavior: 'instant' }); return document.getElementById('isle-plan').getBoundingClientRect().top; }) : 0;
     await page.waitForFunction(() => !document.documentElement.classList.contains('gl-pending'), { timeout: 15000 }).catch(() => note(`${mode}/${view}：15 秒內沒有退回 2D`));
     const ms = Date.now() - t0;
     await sleep(300);
+    if (held) {
+      const topAfter = await page.evaluate(() => document.getElementById('isle-plan').getBoundingClientRect().top);
+      Math.abs(topAfter - topBefore) < 3 ? ok('退回 2D 時，閱讀位置不跳') : note(`退回 2D 時畫面跳了 ${topAfter - topBefore}px`);
+    }
     const st = await page.evaluate(() => ({ stage: !document.getElementById('islStage').hidden && getComputedStyle(document.getElementById('islStage')).display !== 'none', gl: document.body.classList.contains('webgl-ready') }));
     !st.stage && !st.gl ? ok(`${ms} ms 內退回 2D`) : note(`${mode}/${view} 沒有退回 2D`);
     if (mode === 'hang' && ms > 9500) note(`卡住時太晚才退回：${ms} ms`);
@@ -170,6 +196,46 @@ const server = http.createServer((req, res) => {
     solidsOK ? ok('沒有 3D 場景時，正多面體互動仍可用') : note('沒有 3D 時正多面體失效');
     await page.screenshot({ path: path.join(SHOT_DIR, `${mode}-${view}.png`) });
     errors.length ? note(`${mode}/${view} 主控台錯誤：${errors.join(' | ')}`) : ok('主控台沒有錯誤');
+    await page.close();
+  }
+
+  /* 會場投影版 */
+  for (const [name, size] of [['1080p', { width: 1920, height: 1080 }], ['720p', { width: 1280, height: 720 }], ['4x3', { width: 1024, height: 768 }]]) {
+    console.log(`▶ 投影版 · ${name}`);
+    const page = await browser.newPage(), errors = [];
+    await page.setViewport(size);
+    page.on('pageerror', e => errors.push(e.message));
+    await page.goto(BASE + '?show', { waitUntil: 'domcontentloaded' });
+    await page.waitForFunction(() => !document.documentElement.classList.contains('gl-pending') && document.body.classList.contains('webgl-ready'), { timeout: 60000 });
+    await sleep(2500);
+    const s1 = await page.evaluate(() => window.__island.stats());
+    await sleep(2000);
+    const r = await page.evaluate(() => {
+      const vis = q => { const e = document.querySelector(q); return !!e && getComputedStyle(e).display !== 'none' && e.getClientRects().length > 0; };
+      const card = document.querySelector('.show-card').getBoundingClientRect(), img = document.querySelector('.show-card img');
+      return { bar: vis('.isl-bar'), list: vis('.isl-list'), jumps: vis('.isl-jumps'), card: vis('.show-card'), title: vis('.show-title'), qr: img.complete && img.naturalWidth > 0,
+        inside: card.left >= 0 && card.top >= 0 && card.right <= innerWidth && card.bottom <= innerHeight, qrPx: img.getBoundingClientRect().width,
+        over: document.documentElement.scrollWidth - innerWidth, draws: window.__island.stats().draws };
+    });
+    !r.bar && !r.list && !r.jumps && r.card && r.title ? ok('只留群島、站名和 QR') : note('投影版元素異常：' + JSON.stringify(r));
+    r.qr && r.inside && r.over <= 1 ? ok(`QR 完整顯示，邊長 ${Math.round(r.qrPx)}px`) : note('投影版 QR 異常：' + JSON.stringify(r));
+    r.draws > s1.draws ? ok('群島持續慢慢轉') : note('投影版沒有轉動');
+    await page.screenshot({ path: path.join(SHOT_DIR, `show-${name}.png`) });
+    errors.length ? note('投影版錯誤：' + errors.join(' | ')) : ok('沒有頁面錯誤');
+    await page.close();
+  }
+  {
+    console.log('▶ 投影版 · 沒有 WebGL');
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 720 });
+    await page.evaluateOnNewDocument(() => {
+      const o = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (t, ...r) { return /webgl/i.test(t) ? null : o.call(this, t, ...r); };
+    });
+    await page.goto(BASE + '?show', { waitUntil: 'networkidle0' });
+    const r = await page.evaluate(() => { const c = document.querySelector('.show-card').getBoundingClientRect(), t = document.querySelector('.show-title').getBoundingClientRect(), i = document.querySelector('.show-card img'); return { nogl: document.documentElement.classList.contains('show-nogl'), qr: i.naturalWidth > 0, cx: c.left + c.width / 2, inside: c.top >= 0 && c.bottom <= innerHeight, clear: c.top >= t.bottom || c.left >= t.right }; });
+    r.nogl && r.qr && r.inside && r.clear && Math.abs(r.cx - 640) < 3 ? ok('跑不動 3D 時，QR 放大置中') : note('投影版退路異常：' + JSON.stringify(r));
+    await page.screenshot({ path: path.join(SHOT_DIR, 'show-nogl.png') });
     await page.close();
   }
 
