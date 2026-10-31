@@ -71,7 +71,7 @@ const ACTIVITIES = {
     }
     const eq = el('p', { className: 'act-eq' });
     eq.setAttribute('aria-live', 'polite');
-    const why = el('p', { className: 'act-why', textContent: '點陣說明了原因：每多一圈 L，就把 n×n 的正方形補成 (n+1)×(n+1)。' });
+    const why = el('p', { className: 'act-why', textContent: '看點陣就知道原因：多一圈 L，n×n 的正方形就變成 (n+1)×(n+1)。' });
     const btn = el('button', { type: 'button', className: 'act-btn is-primary' });
     function draw() {
       dots.forEach(({ c, layer }) => c.setAttribute('fill', layer >= n ? '#ddd5c4' : layer === n - 1 ? '#c0392b' : layer % 2 ? '#f5b82e' : '#2c3e7a'));
@@ -119,7 +119,7 @@ const ACTIVITIES = {
     const range = el('input', { type: 'range', id, min: 1, max: 100, value: 8 });
     const eq = el('p', { className: 'act-eq' });
     eq.setAttribute('aria-live', 'polite');
-    const why = el('p', { className: 'act-why', textContent: '偶數各貢獻一個 2，4 的倍數再多一個，8 的倍數再多一個……所以把每一層的倍數個數加起來就好。碼頭 1 到 8 號共有 7 個木箱，正好是 8! 含的因數 2 個數。' });
+    const why = el('p', { className: 'act-why', textContent: '每個偶數先算一個 2，4 的倍數再多算一個，8 的倍數再多算一個……把每一層的倍數個數加起來就好。碼頭 1 到 8 號共有 7 個木箱，正好是 8! 含的因數 2 個數。' });
     function draw() {
       const n = +range.value, terms = [];
       for (let k = 2; k <= n; k *= 2) terms.push(Math.floor(n / k));

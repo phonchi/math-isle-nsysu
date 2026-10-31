@@ -19,8 +19,8 @@ TEMPLATE = ROOT / "tools" / "template"
 TITLE = "猜想群島"
 SUB = "中山大學南部高中數學人才培育班導覽"
 SITE_URL = "https://phonchi.github.io/math-isle-nsysu/"
-INDEX_DESC = "用五座島認識中山大學南部高中數學人才培育班：兩年路徑、課程、晉級原則與學習資源，還能動手玩幾個數學小實驗。"
-PARENTS_DESC = "給家長的中山大學南部高中數學人才培育班重點：兩年路徑、課程、晉級原則、升學相關與交通。"
+INDEX_DESC = "用五座島認識中山大學南部高中數學人才培育班：兩年課程、晉級方式和學習資源，也能動手試幾個數學小實驗。"
+PARENTS_DESC = "給家長看的中山大學南部高中數學人才培育班重點：兩年課程、晉級方式、升學資訊和交通。"
 FONT_TEXT = TITLE + "計畫島初級中高資源港"
 FONTS = ("https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@900&display=swap&text="
          + urllib.parse.quote(FONT_TEXT))
@@ -94,7 +94,7 @@ def parent_today() -> str:
         isle = next(i for i in M.ISLES if i["key"] == key)
         text = item.get("text") or dict(isle["facts"])[name]
         rows.append(f'    <li><a class="today-go" href="#{fact_id(key, name)}">{esc(item["title"])}</a><span>{linked(text)}</span></li>')
-    return '  <nav class="today" aria-labelledby="today-h">\n    <h2 id="today-h">今天先找這三件事</h2>\n    <ul>\n' + "\n".join(rows) + "\n    </ul>\n  </nav>"
+    return '  <nav class="today" aria-labelledby="today-h">\n    <h2 id="today-h">先看這三件事</h2>\n    <ul>\n' + "\n".join(rows) + "\n    </ul>\n  </nav>"
 
 
 def og_tags(title: str, description: str, page: str) -> str:
@@ -206,7 +206,7 @@ if (window.WebGLRenderingContext) {{
 </header>
 <main class="isl-main">
   <div class="isl-stage" id="islStage" hidden>
-    <p class="isl-loading" aria-hidden="true">群島載入中，下方資訊可以先看</p>
+    <p class="isl-loading" aria-hidden="true">群島載入中，資訊可以先看</p>
     <canvas id="islCanvas" tabindex="0" aria-label="3D 群島地圖：拖曳旋轉、滾輪或雙指縮放、點選島嶼。所有內容也可在島嶼列表閱讀。"></canvas>
     <div class="isl-jumps" role="group" aria-label="跳到島嶼">
 {jumps}
@@ -217,7 +217,7 @@ if (window.WebGLRenderingContext) {{
   <nav class="isl-list" id="islList" aria-label="島嶼列表">
 {featured()}
     <div class="isl-intro">
-      <p>五座島，兩年路徑，新生從 2 號初級島出發。點一座島，就能看課程、時程和資源，也能順手玩一個小實驗。</p>
+      <p>五座島，帶你看完兩年要學什麼。新生從 2 號初級島出發；點一座島，就能看課程、時程和資源，也能玩一個小實驗。</p>
       <p class="isl-date">{esc(M.INFO_DATE)}。{esc(M.DISCLAIMER)}</p>
     </div>
 {sections}
@@ -273,7 +273,7 @@ def build_parents() -> str:
 <body>
 <header>
   <p class="back"><a href="index.html">← 回到猜想群島</a></p>
-  <h1>給家長：兩年路徑與規則</h1>
+  <h1>給家長：兩年課程與規則</h1>
   <p>{esc(M.INFO_DATE)}。{esc(M.DISCLAIMER)}</p>
 </header>
 <main>

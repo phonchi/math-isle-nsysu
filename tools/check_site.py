@@ -72,8 +72,8 @@ activities = (ROOT / "tools/template/activities.js").read_text(encoding="utf-8")
 expect("碼頭 1 到 8 號共有 7 個木箱" in activities and "min: 1, max: 100, value: 8 " in activities, "滑桿預設 n=8，並說明與碼頭的關係")
 first, second = M.FEATURED["rounds"]
 colour = lambda c: (c[0] + c[1]) % 2
-expect(first["gone"] == [[0, 0], [7, 7]] and colour(first["gone"][0]) == colour(first["gone"][1]) and first["answer"] is False and "同色" in first["why"], "第一題：左上、右下同色，答案為不能")
-expect(second["gone"] == [[0, 0], [7, 0]] and colour(second["gone"][0]) != colour(second["gone"][1]) and second["answer"] is True and "異色" in second["why"], "第二題：左上、右上異色，答案為能")
+expect(first["gone"] == [[0, 0], [7, 7]] and colour(first["gone"][0]) == colour(first["gone"][1]) and first["answer"] is False and "顏色相同" in first["why"], "第一題：左上、右下同色，答案為不能")
+expect(second["gone"] == [[0, 0], [7, 0]] and colour(second["gone"][0]) != colour(second["gone"][1]) and second["answer"] is True and "顏色不同" in second["why"], "第二題：左上、右上異色，答案為能")
 # 第二題的鋪法照文字實際鋪一次：第一排剩下的 6 格與其他每排 8 格，全部橫著放
 board = {(x, y) for x in range(8) for y in range(8)} - {tuple(c) for c in second["gone"]}
 tiles = [{(x, y), (x + 1, y)} for y in range(8) for x in range(1 if y == 0 else 0, 7 if y == 0 else 8, 2)]
