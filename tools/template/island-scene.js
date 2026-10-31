@@ -460,7 +460,9 @@ function buildWorld(THREE, addons, renderer, stage, canvas) {
     const n = document.createElement('span'); n.className = 'isl-tag-num'; n.textContent = i.code;
     const t = document.createElement('span'); t.className = 'isl-tag-t'; t.textContent = i.name;
     const s = document.createElement('small'); s.textContent = i.landmark; t.appendChild(s);
-    btn.append(n, t); btn.addEventListener('click', () => select(i.key)); layer.appendChild(btn);
+    btn.append(n, t);
+    if (i.now) { const h = document.createElement('span'); h.className = 'isl-tag-now'; h.textContent = '你在這裡'; btn.append(h); }
+    btn.addEventListener('click', () => select(i.key)); layer.appendChild(btn);
     return { el: btn, key: i.key, anchor: new THREE.Vector3(I.x, I.top + I.labelH, I.z) };
   });
   function placeTags() {

@@ -6,6 +6,13 @@ header{padding:1.4rem 0 1rem;}
 header h1{font-size:clamp(1.6rem,6vw,2.2rem);line-height:1.3;margin:.3rem 0 .5rem;}
 header p{color:var(--fg2);font-size:.92rem;}
 .back a{color:var(--accent);font-weight:700;}
+.today{background:#fff8e1;border:2px solid #f5b82e;border-radius:8px;padding:1rem 1.2rem;}
+.today ul{list-style:none;margin-top:.4rem;}
+.today li{padding:.45rem 0;border-top:1px solid var(--line);}
+.today a{display:block;color:var(--accent);font-weight:700;min-height:28px;}
+.today span{display:block;font-size:.95rem;text-wrap:pretty;}
+dl>div:target{background:#fff8e1;}
+dl>div{scroll-margin-top:.75rem;}
 section{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:1.1rem 1.2rem;margin-top:1rem;}
 h2{font-size:1.25rem;line-height:1.4;}
 h2 small{display:block;font-size:.84rem;font-weight:500;color:var(--accent);}

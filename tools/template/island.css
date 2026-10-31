@@ -78,6 +78,21 @@ a{color:var(--accent);}
 .solid-table tr.is-on{font-weight:700;color:var(--accent);}
 .solid-table tr.is-on th{font-weight:700;}
 
+/* 首屏共同題與「你在這裡」 */
+.hook{margin:0 0 .9rem;background:var(--surface);border:2px solid var(--gold);}
+.hook-title{font-size:1.02rem;line-height:1.4;font-weight:900;margin-bottom:.45rem;}
+.hook-row{display:grid;grid-template-columns:92px minmax(0,1fr);gap:.7rem;align-items:start;}
+.board-svg{display:block;width:92px;height:92px;}
+.board-svg .is-dark{fill:var(--accent);}
+.board-svg .is-light{fill:#e8e0ce;}
+.board-svg .is-gone{fill:none;stroke:var(--red);stroke-width:.9;stroke-dasharray:2 1.4;}
+.hook .act-q{font-size:.92rem;line-height:1.5;}
+.hook .act-row{margin-top:.35rem;}
+.hook .act-btn{min-width:4.2em;}
+.hook-next{display:block;margin-top:.25rem;font-weight:700;color:var(--red);}
+.isle-now{display:inline-block;margin-left:.5rem;padding:.05rem .45rem;border-radius:4px;background:var(--gold);color:var(--fg);font:700 .72rem/1.5 var(--sans);vertical-align:.18em;}
+.isl-tag-now{display:grid;place-items:center;padding:0 .4rem;background:var(--gold);color:var(--fg);font-size:.7rem;font-weight:700;}
+
 /* 3D 模式 */
 .isl-stage{position:relative;overflow:hidden;}
 .gl-pending .isl-stage[hidden]{display:block;}

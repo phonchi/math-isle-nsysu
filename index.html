@@ -5,6 +5,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="用五座島認識中山大學南部高中數學人才培育班：兩年路徑、課程、晉級原則與學習資源，還能動手玩幾個數學小實驗。">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="zh_TW">
+<meta property="og:title" content="猜想群島｜中山大學南部高中數學人才培育班導覽">
+<meta property="og:description" content="用五座島認識中山大學南部高中數學人才培育班：兩年路徑、課程、晉級原則與學習資源，還能動手玩幾個數學小實驗。">
+<meta property="og:url" content="https://phonchi.github.io/math-isle-nsysu/">
+<meta property="og:image" content="https://phonchi.github.io/math-isle-nsysu/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="猜想群島：五座島的 3D 地圖">
+<meta name="twitter:card" content="summary_large_image">
 <title>猜想群島｜中山大學南部高中數學人才培育班導覽</title>
 <script>
 /* 有 WebGL 才先排 3D 版面。若模組腳本完全無法執行，12 秒後由這裡退回 2D；資訊本身一直可讀。 */
@@ -95,6 +105,21 @@ a{color:var(--accent);}
 .solid-table tbody th{text-align:left;}
 .solid-table tr.is-on{font-weight:700;color:var(--accent);}
 .solid-table tr.is-on th{font-weight:700;}
+
+/* 首屏共同題與「你在這裡」 */
+.hook{margin:0 0 .9rem;background:var(--surface);border:2px solid var(--gold);}
+.hook-title{font-size:1.02rem;line-height:1.4;font-weight:900;margin-bottom:.45rem;}
+.hook-row{display:grid;grid-template-columns:92px minmax(0,1fr);gap:.7rem;align-items:start;}
+.board-svg{display:block;width:92px;height:92px;}
+.board-svg .is-dark{fill:var(--accent);}
+.board-svg .is-light{fill:#e8e0ce;}
+.board-svg .is-gone{fill:none;stroke:var(--red);stroke-width:.9;stroke-dasharray:2 1.4;}
+.hook .act-q{font-size:.92rem;line-height:1.5;}
+.hook .act-row{margin-top:.35rem;}
+.hook .act-btn{min-width:4.2em;}
+.hook-next{display:block;margin-top:.25rem;font-weight:700;color:var(--red);}
+.isle-now{display:inline-block;margin-left:.5rem;padding:.05rem .45rem;border-radius:4px;background:var(--gold);color:var(--fg);font:700 .72rem/1.5 var(--sans);vertical-align:.18em;}
+.isl-tag-now{display:grid;place-items:center;padding:0 .4rem;background:var(--gold);color:var(--fg);font-size:.7rem;font-weight:700;}
 
 /* 3D 模式 */
 .isl-stage{position:relative;overflow:hidden;}
@@ -190,8 +215,12 @@ a{color:var(--accent);}
     <p class="isl-drag" aria-hidden="true">拖曳旋轉 · 點島看介紹</p>
   </div>
   <nav class="isl-list" id="islList" aria-label="島嶼列表">
+    <aside class="hook act" data-activity="board" aria-labelledby="hook-h">
+      <h2 class="hook-title" id="hook-h">等開場？和旁邊的人猜一題</h2>
+      <div class="act-body"><p class="act-q">8×8 棋盤去掉左上、右下兩個角，能用 1×2 骨牌剛好鋪滿嗎？</p><p>不能。去掉的兩格同色，剩下的黑白格相差 2 格；每張骨牌一定蓋住一黑一白，所以鋪不滿。</p></div>
+    </aside>
     <div class="isl-intro">
-      <p>五座島，兩年路徑。點一座島，就能看課程、時程和資源，也能順手玩一個小實驗。</p>
+      <p>五座島，兩年路徑，新生從 2 號初級島出發。點一座島，就能看課程、時程和資源，也能順手玩一個小實驗。</p>
       <p class="isl-date">115 學年度資料，2026 年 10 月整理。本站是導覽頁，不取代正式公告。招生、課表、師資與獎項資訊請以計畫官網與學校公告為準。</p>
     </div>
     <section class="isle" id="isle-plan" data-isle="plan" aria-labelledby="h-plan">
@@ -216,7 +245,7 @@ a{color:var(--accent);}
     <section class="isle" id="isle-junior" data-isle="junior" aria-labelledby="h-junior">
       <header class="isle-head">
         <span class="isle-num">2</span>
-        <div><h2 id="h-junior">初級島</h2><p class="isle-period">高一上、下學期 · 115 年 11 月至 116 年 6 月</p></div>
+        <div><h2 id="h-junior">初級島<span class="isle-now">你在這裡</span></h2><p class="isle-period">高一上、下學期 · 115 年 11 月至 116 年 6 月</p></div>
       </header>
       <p class="isle-lead">第一階段練習把話說精確，熟悉不同的數學對象與推理方法。</p>
       <dl class="isle-facts">
@@ -304,31 +333,36 @@ a{color:var(--accent);}
    "key": "plan",
    "code": "1",
    "name": "計畫島",
-   "landmark": "猜想燈塔"
+   "landmark": "猜想燈塔",
+   "now": false
   },
   {
    "key": "junior",
    "code": "2",
    "name": "初級島",
-   "landmark": "反例水門"
+   "landmark": "反例水門",
+   "now": true
   },
   {
    "key": "middle",
    "code": "3",
    "name": "中級島",
-   "landmark": "質因數碼頭"
+   "landmark": "質因數碼頭",
+   "now": false
   },
   {
    "key": "senior",
    "code": "4",
    "name": "高級島",
-   "landmark": "多面體觀測站"
+   "landmark": "多面體觀測站",
+   "now": false
   },
   {
    "key": "harbor",
    "code": "5",
    "name": "資源港",
-   "landmark": "補給港"
+   "landmark": "補給港",
+   "now": false
   }
  ],
  "claims": [
@@ -364,12 +398,17 @@ a{color:var(--accent);}
   {
    "q": "三個連續正整數的乘積，一定是 6 的倍數嗎？",
    "a": "一定是。三個連續整數中至少一個是偶數，也恰有一個是 3 的倍數，所以乘積同時被 2 和 3 整除。"
-  },
-  {
-   "q": "8×8 棋盤去掉對角的兩個角格，能用 1×2 骨牌剛好鋪滿嗎？",
-   "a": "不能。對角兩格同色，去掉後黑白格相差 2 格，而每張骨牌一定蓋住一黑一白。"
   }
- ]
+ ],
+ "featured": {
+  "title": "等開場？和旁邊的人猜一題",
+  "q": "8×8 棋盤去掉左上、右下兩個角，能用 1×2 骨牌剛好鋪滿嗎？",
+  "yes": "能",
+  "no": "不能",
+  "answer": false,
+  "why": "去掉的兩格同色，剩下的黑白格相差 2 格；每張骨牌一定蓋住一黑一白，所以鋪不滿。",
+  "prompt": "能用一句話講給旁邊的人聽嗎？"
+ }
 }
 </script>
 <script type="module">
@@ -507,6 +546,38 @@ const el = (tag, props = {}, ...kids) => {
 const SUP = { 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
 
 const ACTIVITIES = {
+  /* 首屏共同題：棋盤缺兩角。先猜，再看理由 */
+  board(body) {
+    const f = DATA.featured, NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 80 80');
+    svg.setAttribute('class', 'board-svg');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', '8 乘 8 的黑白棋盤，左上和右下兩個角格已去掉');
+    for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
+      const r = document.createElementNS(NS, 'rect');
+      const removed = (x === 0 && y === 0) || (x === 7 && y === 7);
+      r.setAttribute('x', x * 10); r.setAttribute('y', y * 10); r.setAttribute('width', 10); r.setAttribute('height', 10);
+      r.setAttribute('class', removed ? 'is-gone' : (x + y) % 2 ? 'is-light' : 'is-dark');
+      svg.appendChild(r);
+    }
+    const why = el('p', { className: 'act-why', hidden: true });
+    why.setAttribute('aria-live', 'polite');
+    const row = el('div', { className: 'act-row' });
+    [[f.yes, true], [f.no, false]].forEach(([label, value]) => {
+      const b = el('button', { type: 'button', className: 'act-btn', textContent: label });
+      b.addEventListener('click', () => {
+        row.querySelectorAll('button').forEach(x => { x.disabled = true; });
+        b.setAttribute('aria-pressed', 'true');
+        why.replaceChildren(el('b', { textContent: value === f.answer ? '猜對了。' : `答案是「${f.answer ? f.yes : f.no}」。` }), ` ${f.why}`, el('span', { className: 'hook-next', textContent: f.prompt }));
+        why.hidden = false;
+      });
+      row.append(b);
+    });
+    const text = el('div', {}, el('p', { className: 'act-q', textContent: f.q }), row);
+    body.replaceChildren(el('div', { className: 'hook-row' }, svg, text), why);
+  },
+
   /* 奇數和：每按一次，外圍多一圈 L */
   dots(body) {
     const MAX = 8, GAP = 10, NS = 'http://www.w3.org/2000/svg';
@@ -568,10 +639,10 @@ const ACTIVITIES = {
   primes(body) {
     const id = 'primes-n';
     const label = el('label', { htmlFor: id, className: 'act-q' });
-    const range = el('input', { type: 'range', id, min: 1, max: 100, value: 10 });
+    const range = el('input', { type: 'range', id, min: 1, max: 100, value: 8 });
     const eq = el('p', { className: 'act-eq' });
     eq.setAttribute('aria-live', 'polite');
-    const why = el('p', { className: 'act-why', textContent: '偶數各貢獻一個 2，4 的倍數再多一個，8 的倍數再多一個……所以把每一層的倍數個數加起來就好。' });
+    const why = el('p', { className: 'act-why', textContent: '偶數各貢獻一個 2，4 的倍數再多一個，8 的倍數再多一個……所以把每一層的倍數個數加起來就好。碼頭 1 到 8 號共有 7 個木箱，正好是 8! 含的因數 2 個數。' });
     function draw() {
       const n = +range.value, terms = [];
       for (let k = 2; k <= n; k *= 2) terms.push(Math.floor(n / k));
@@ -1177,7 +1248,9 @@ function buildWorld(THREE, addons, renderer, stage, canvas) {
     const n = document.createElement('span'); n.className = 'isl-tag-num'; n.textContent = i.code;
     const t = document.createElement('span'); t.className = 'isl-tag-t'; t.textContent = i.name;
     const s = document.createElement('small'); s.textContent = i.landmark; t.appendChild(s);
-    btn.append(n, t); btn.addEventListener('click', () => select(i.key)); layer.appendChild(btn);
+    btn.append(n, t);
+    if (i.now) { const h = document.createElement('span'); h.className = 'isl-tag-now'; h.textContent = '你在這裡'; btn.append(h); }
+    btn.addEventListener('click', () => select(i.key)); layer.appendChild(btn);
     return { el: btn, key: i.key, anchor: new THREE.Vector3(I.x, I.top + I.labelH, I.z) };
   });
   function placeTags() {

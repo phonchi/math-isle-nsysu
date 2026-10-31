@@ -18,6 +18,9 @@ ROOT = Path(__file__).resolve().parent.parent
 TEMPLATE = ROOT / "tools" / "template"
 TITLE = "猜想群島"
 SUB = "中山大學南部高中數學人才培育班導覽"
+SITE_URL = "https://phonchi.github.io/math-isle-nsysu/"
+INDEX_DESC = "用五座島認識中山大學南部高中數學人才培育班：兩年路徑、課程、晉級原則與學習資源，還能動手玩幾個數學小實驗。"
+PARENTS_DESC = "給家長的中山大學南部高中數學人才培育班重點：兩年路徑、課程、晉級原則、升學相關與交通。"
 FONT_TEXT = TITLE + "計畫島初級中高資源港"
 FONTS = ("https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@900&display=swap&text="
          + urllib.parse.quote(FONT_TEXT))
@@ -66,8 +69,51 @@ def fact_value(v) -> str:
     return f"<dd><ul>{rows}</ul></dd>"
 
 
-def facts(isle: dict) -> str:
-    return "\n".join(f"        <div><dt>{esc(k)}</dt>{fact_value(v)}</div>" for k, v in isle["facts"])
+def fact_id(isle_key: str, name: str) -> str:
+    """家長頁事實列的錨點：用事實在該島的位置編號，不把中文放進 id。"""
+    isle = next(i for i in M.ISLES if i["key"] == isle_key)
+    return f"p-{isle_key}-{[k for k, _ in isle['facts']].index(name)}"
+
+
+def facts(isle: dict, anchors: bool = False) -> str:
+    def row(k, v):
+        attr = f' id="{fact_id(isle["key"], k)}"' if anchors else ""
+        return f"        <div{attr}><dt>{esc(k)}</dt>{fact_value(v)}</div>"
+    return "\n".join(row(k, v) for k, v in isle["facts"])
+
+
+def parent_today() -> str:
+    rows = []
+    for item in M.PARENT_TODAY:
+        key, name = item["target"]
+        isle = next(i for i in M.ISLES if i["key"] == key)
+        text = item.get("text") or dict(isle["facts"])[name]
+        rows.append(f'    <li><a href="#{fact_id(key, name)}">{esc(item["title"])}</a><span>{esc(text)}</span></li>')
+    return '  <nav class="today" aria-labelledby="today-h">\n    <h2 id="today-h">今天先找這三件事</h2>\n    <ul>\n' + "\n".join(rows) + "\n    </ul>\n  </nav>"
+
+
+def og_tags(title: str, description: str, page: str) -> str:
+    return "\n".join([
+        '<meta property="og:type" content="website">',
+        '<meta property="og:locale" content="zh_TW">',
+        f'<meta property="og:title" content="{esc(title)}">',
+        f'<meta property="og:description" content="{esc(description)}">',
+        f'<meta property="og:url" content="{SITE_URL}{page}">',
+        f'<meta property="og:image" content="{SITE_URL}og.png">',
+        '<meta property="og:image:width" content="1200">',
+        '<meta property="og:image:height" content="630">',
+        f'<meta property="og:image:alt" content="{esc(TITLE)}：五座島的 3D 地圖">',
+        '<meta name="twitter:card" content="summary_large_image">',
+    ])
+
+
+def featured() -> str:
+    f = M.FEATURED
+    verdict = f["yes"] if f["answer"] else f["no"]
+    return f"""    <aside class="hook act" data-activity="board" aria-labelledby="hook-h">
+      <h2 class="hook-title" id="hook-h">{esc(f['title'])}</h2>
+      <div class="act-body"><p class="act-q">{esc(f['q'])}</p><p>{esc(verdict)}。{esc(f['why'])}</p></div>
+    </aside>"""
 
 
 def links(isle: dict) -> str:
@@ -79,7 +125,7 @@ def section(i: dict) -> str:
     return f"""    <section class="isle" id="isle-{i['key']}" data-isle="{i['key']}" aria-labelledby="h-{i['key']}">
       <header class="isle-head">
         <span class="isle-num">{i['code']}</span>
-        <div><h2 id="h-{i['key']}">{esc(i['name'])}</h2><p class="isle-period">{esc(i['period'])}</p></div>
+        <div><h2 id="h-{i['key']}">{esc(i['name'])}{'<span class="isle-now">你在這裡</span>' if i.get('now') else ''}</h2><p class="isle-period">{esc(i['period'])}</p></div>
       </header>
       <p class="isle-lead">{esc(i['lead'])}</p>
       <dl class="isle-facts">
@@ -99,8 +145,8 @@ def build_index() -> str:
     css = (TEMPLATE / "island.css").read_text(encoding="utf-8").rstrip()
     js = "\n\n".join((TEMPLATE / f).read_text(encoding="utf-8").rstrip()
                      for f in ("island.js", "activities.js", "island-scene.js"))
-    data = dict(isles=[dict(key=i["key"], code=i["code"], name=i["name"], landmark=i["landmark"]) for i in M.ISLES],
-                claims=M.CLAIMS, puzzles=M.PUZZLES)
+    data = dict(isles=[dict(key=i["key"], code=i["code"], name=i["name"], landmark=i["landmark"], now=bool(i.get("now"))) for i in M.ISLES],
+                claims=M.CLAIMS, puzzles=M.PUZZLES, featured=M.FEATURED)
     data_json = json.dumps(data, ensure_ascii=False, indent=1).replace("</", "<\\/")
     v = vendor_stamp()
     importmap = json.dumps({"imports": {
@@ -119,7 +165,8 @@ def build_index() -> str:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="用五座島認識中山大學南部高中數學人才培育班：兩年路徑、課程、晉級原則與學習資源，還能動手玩幾個數學小實驗。">
+<meta name="description" content="{INDEX_DESC}">
+{og_tags(f"{TITLE}｜{SUB}", INDEX_DESC, "")}
 <title>{TITLE}｜{SUB}</title>
 <script>
 /* 有 WebGL 才先排 3D 版面。若模組腳本完全無法執行，12 秒後由這裡退回 2D；資訊本身一直可讀。 */
@@ -160,8 +207,9 @@ if (window.WebGLRenderingContext) {{
     <p class="isl-drag" aria-hidden="true">拖曳旋轉 · 點島看介紹</p>
   </div>
   <nav class="isl-list" id="islList" aria-label="島嶼列表">
+{featured()}
     <div class="isl-intro">
-      <p>五座島，兩年路徑。點一座島，就能看課程、時程和資源，也能順手玩一個小實驗。</p>
+      <p>五座島，兩年路徑，新生從 2 號初級島出發。點一座島，就能看課程、時程和資源，也能順手玩一個小實驗。</p>
       <p class="isl-date">{esc(M.INFO_DATE)}。{esc(M.DISCLAIMER)}</p>
     </div>
 {sections}
@@ -192,7 +240,7 @@ def build_parents() -> str:
     <h2 id="p-{i['key']}">{esc(i['name'])}<small>{esc(i['period'])}</small></h2>
     <p>{esc(i['lead'])}</p>
     <dl>
-{facts(i)}
+{facts(i, anchors=True)}
     </dl>
     <ul class="links">{links(i)}</ul>
   </section>""")
@@ -203,7 +251,8 @@ def build_parents() -> str:
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="description" content="給家長的中山大學南部高中數學人才培育班重點：兩年路徑、課程、晉級原則、升學相關與交通。">
+<meta name="description" content="{PARENTS_DESC}">
+{og_tags(f"給家長｜{TITLE}", PARENTS_DESC, "parents.html")}
 <title>給家長｜{TITLE}</title>
 <style>
 {css}
@@ -216,6 +265,7 @@ def build_parents() -> str:
   <p>{esc(M.INFO_DATE)}。{esc(M.DISCLAIMER)}</p>
 </header>
 <main>
+{parent_today()}
 {body}
 </main>
 </body>

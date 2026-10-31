@@ -99,6 +99,16 @@ const server = http.createServer((req, res) => {
     /* 小互動 */
     const acts = await page.evaluate(async () => {
       const out = {};
+      const hook = document.querySelector('[data-activity=board]');
+      out.hookRects = hook.querySelectorAll('svg rect').length;
+      out.hookGone = hook.querySelectorAll('svg rect.is-gone').length;
+      out.hookDark = hook.querySelectorAll('svg rect.is-dark').length;
+      out.hookLight = hook.querySelectorAll('svg rect.is-light').length;
+      out.hookBefore = hook.querySelector('.act-why').hidden;
+      hook.querySelectorAll('.act-row button')[1].click();
+      out.hookWhy = hook.querySelector('.act-why').textContent;
+      out.hookNow = !!document.querySelector('.isl-tag-now') && !!document.querySelector('#isle-junior .isle-now');
+      out.primesDefault = document.querySelector('[data-activity=primes] .act-eq').textContent;
       const dots = document.querySelector('[data-activity=dots]');
       const eq = () => dots.querySelector('.act-eq').textContent;
       dots.querySelector('button').click(); dots.querySelector('button').click();
@@ -120,6 +130,10 @@ const server = http.createServer((req, res) => {
       out.puzzleOpen = !p.querySelector('.act-why').hidden;
       return out;
     });
+    acts.hookRects === 64 && acts.hookGone === 2 && acts.hookDark === 30 && acts.hookLight === 32 ? ok('首屏棋盤：去掉兩個同色角後為 30 比 32') : note(`首屏棋盤錯誤：${JSON.stringify(acts)}`);
+    acts.hookBefore && acts.hookWhy.startsWith('猜對了') && acts.hookWhy.includes('旁邊的人') ? ok('首屏題作答後才顯示理由') : note('首屏題互動失敗：' + acts.hookWhy);
+    acts.hookNow ? ok('初級島的資訊卡與 3D 標籤都有「你在這裡」') : note('缺「你在這裡」');
+    acts.primesDefault === '8! 含 4 + 2 + 1 = 7 個因數 2' ? ok('滑桿預設：' + acts.primesDefault) : note('滑桿預設錯誤：' + acts.primesDefault);
     acts.dots.endsWith('= 9 = 3²') ? ok('點陣互動：' + acts.dots) : note('點陣結果錯誤：' + acts.dots);
     acts.claimWhy && acts.claimNext ? ok('真假題可作答、可換題') : note('真假題互動失敗');
     /= 97 個因數 2$/.test(acts.primes) ? ok('滑桿互動：' + acts.primes) : note('滑桿結果錯誤：' + acts.primes);

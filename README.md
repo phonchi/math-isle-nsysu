@@ -16,6 +16,8 @@ python3 -B tools/check_site.py
 SHOT_DIR=shots node tools/check_browser.js
 ```
 
+LINE 與社群預覽圖 `og.png` 由 `node tools/make_og.js` 從實際 3D 全景產生，再以 `pngquant` 壓縮。下一屆開始時，記得更新 `site_meta.py` 的 `now`（「你在這裡」）和 `INFO_DATE`。
+
 本機預覽請用 HTTP 伺服器，例如 `python3 -m http.server`；用 `file://` 開啟時瀏覽器會擋下模組，頁面會退回 2D。
 
 Three.js 0.186.1 放在 `vendor/three/`（MIT 授權），不依賴 CDN。

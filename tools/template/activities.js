@@ -7,6 +7,38 @@ const el = (tag, props = {}, ...kids) => {
 const SUP = { 0: '⁰', 1: '¹', 2: '²', 3: '³', 4: '⁴', 5: '⁵', 6: '⁶', 7: '⁷', 8: '⁸', 9: '⁹' };
 
 const ACTIVITIES = {
+  /* 首屏共同題：棋盤缺兩角。先猜，再看理由 */
+  board(body) {
+    const f = DATA.featured, NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', '0 0 80 80');
+    svg.setAttribute('class', 'board-svg');
+    svg.setAttribute('role', 'img');
+    svg.setAttribute('aria-label', '8 乘 8 的黑白棋盤，左上和右下兩個角格已去掉');
+    for (let y = 0; y < 8; y++) for (let x = 0; x < 8; x++) {
+      const r = document.createElementNS(NS, 'rect');
+      const removed = (x === 0 && y === 0) || (x === 7 && y === 7);
+      r.setAttribute('x', x * 10); r.setAttribute('y', y * 10); r.setAttribute('width', 10); r.setAttribute('height', 10);
+      r.setAttribute('class', removed ? 'is-gone' : (x + y) % 2 ? 'is-light' : 'is-dark');
+      svg.appendChild(r);
+    }
+    const why = el('p', { className: 'act-why', hidden: true });
+    why.setAttribute('aria-live', 'polite');
+    const row = el('div', { className: 'act-row' });
+    [[f.yes, true], [f.no, false]].forEach(([label, value]) => {
+      const b = el('button', { type: 'button', className: 'act-btn', textContent: label });
+      b.addEventListener('click', () => {
+        row.querySelectorAll('button').forEach(x => { x.disabled = true; });
+        b.setAttribute('aria-pressed', 'true');
+        why.replaceChildren(el('b', { textContent: value === f.answer ? '猜對了。' : `答案是「${f.answer ? f.yes : f.no}」。` }), ` ${f.why}`, el('span', { className: 'hook-next', textContent: f.prompt }));
+        why.hidden = false;
+      });
+      row.append(b);
+    });
+    const text = el('div', {}, el('p', { className: 'act-q', textContent: f.q }), row);
+    body.replaceChildren(el('div', { className: 'hook-row' }, svg, text), why);
+  },
+
   /* 奇數和：每按一次，外圍多一圈 L */
   dots(body) {
     const MAX = 8, GAP = 10, NS = 'http://www.w3.org/2000/svg';
@@ -68,10 +100,10 @@ const ACTIVITIES = {
   primes(body) {
     const id = 'primes-n';
     const label = el('label', { htmlFor: id, className: 'act-q' });
-    const range = el('input', { type: 'range', id, min: 1, max: 100, value: 10 });
+    const range = el('input', { type: 'range', id, min: 1, max: 100, value: 8 });
     const eq = el('p', { className: 'act-eq' });
     eq.setAttribute('aria-live', 'polite');
-    const why = el('p', { className: 'act-why', textContent: '偶數各貢獻一個 2，4 的倍數再多一個，8 的倍數再多一個……所以把每一層的倍數個數加起來就好。' });
+    const why = el('p', { className: 'act-why', textContent: '偶數各貢獻一個 2，4 的倍數再多一個，8 的倍數再多一個……所以把每一層的倍數個數加起來就好。碼頭 1 到 8 號共有 7 個木箱，正好是 8! 含的因數 2 個數。' });
     function draw() {
       const n = +range.value, terms = [];
       for (let k = 2; k <= n; k *= 2) terms.push(Math.floor(n / k));
