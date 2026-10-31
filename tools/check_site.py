@@ -60,6 +60,9 @@ expect(abs(colors.count(0) - colors.count(1)) == 2, "棋盤去掉對角兩格後
 for name, v, e, f in [("正四面體", 4, 6, 4), ("正六面體", 8, 12, 6), ("正八面體", 6, 12, 8), ("正十二面體", 20, 30, 12), ("正二十面體", 12, 30, 20)]:
     expect(v - e + f == 2 and f"{name} {v}、{e}、{f}" in M.ISLES[3]["act_static"], f"{name} 的 V、E、F")
 
+scene = (ROOT / "tools/template/island-scene.js").read_text(encoding="utf-8")
+expect("就是它含幾個因數 2" in M.ISLES[2]["hint"] and "const h = v2(k);" in scene, "碼頭木箱數等於號碼含的因數 2 個數")
+
 # 公開內容界線：這些字樣不該出現在任何產物。姓名比對由本機掃描器另外執行，不放進 repo。
 text = "\n".join((ROOT / n).read_text(encoding="utf-8") for n in ("index.html", "parents.html"))
 visible = re.sub(r"<(script|style)\b.*?</\1>", "", text, flags=re.S | re.I)

@@ -92,6 +92,10 @@ const server = http.createServer((req, res) => {
     after.top < VIEW[view].height ? ok('選島後資訊捲入畫面') : note(`選島後資訊沒有捲入畫面 top=${after.top}`);
     await page.screenshot({ path: path.join(SHOT_DIR, `${view}-senior.png`) });
 
+    await page.evaluate(() => document.querySelector('.isl-jump-btn[data-isle="middle"]').click());
+    await sleep(1600);
+    await page.screenshot({ path: path.join(SHOT_DIR, `${view}-middle.png`) });
+
     /* 小互動 */
     const acts = await page.evaluate(async () => {
       const out = {};

@@ -220,15 +220,26 @@ function buildWorld(THREE, addons, renderer, stage, canvas) {
       p('torus', dx + 3.9, .1, dz - .5, 3.8, 3.8, 3.8, c, { rx: Math.PI / 2 }));
     junior.labelH = 7.2;
   }
-  // 中級島：碼頭木箱的高度是 k 含幾個因數 2 再加一（尺規序列）
+  // 中級島：碼頭標出 1 到 8，每個號碼上的木箱數就是該號碼含幾個因數 2（奇數沒有木箱）
   {
     const p = at(middle.x, middle.top, middle.z, FACE);
     const v2 = k => { let c = 0; while (k % 2 === 0) { k /= 2; c++; } return c; };
-    p('round', 0, -.02, 2.2, 8.9, .14, 1.5, C.wood);
+    p('round', 0, -.02, 2.75, 8.9, .14, 2.6, C.wood);
     for (let k = 1; k <= 8; k++) {
-      const h = v2(k) + 1;
+      const h = v2(k);
       for (let y = 0; y < h; y++) p('round', -3.85 + (k - 1) * 1.1, .12 + y * .92, 2.2, .86, .86, .86, y === h - 1 ? C.gold : C.wood);
     }
+    const cv = document.createElement('canvas'); cv.width = 1024; cv.height = 116;
+    const g = cv.getContext('2d');
+    g.fillStyle = '#fffcf3'; g.fillRect(0, 0, cv.width, cv.height);
+    g.fillStyle = '#1a1a2e'; g.font = '700 84px ui-monospace, Menlo, Consolas, monospace'; g.textAlign = 'center'; g.textBaseline = 'middle';
+    for (let k = 1; k <= 8; k++) g.fillText(String(k), (k - .5) * 128, 60);
+    const tex = new THREE.CanvasTexture(cv); tex.colorSpace = THREE.SRGBColorSpace; tex.anisotropy = 4;
+    const strip = new THREE.Mesh(new THREE.PlaneGeometry(8.8, 1), new THREE.MeshBasicMaterial({ map: tex, toneMapped: false }));
+    const off = new THREE.Vector3(0, 0, 3.45).applyAxisAngle(new THREE.Vector3(0, 1, 0), FACE);
+    strip.rotation.order = 'YXZ'; strip.rotation.set(-Math.PI / 2, FACE, 0);
+    strip.position.set(middle.x + off.x, middle.top + .135, middle.z + off.z);
+    world.add(strip);
     p('round', -2.6, 0, -2.8, 4, 2.4, 3, C.wall);
     p('prism', -2.6, 2.4, -2.8, 4.4, 1.3, 3.4, C.forest);
     p('box', -2.6, .05, -1.25, .9, 1.5, .1, C.woodDark);
@@ -272,7 +283,7 @@ function buildWorld(THREE, addons, renderer, stage, canvas) {
   }
   // 植被：避開地標與橋頭
   const LAND = {
-    plan: [[-3, -2.4, 2.6], [2.6, 1.8, 3.8]], junior: [[0, -2, 4.4], [0, 1.4, 2.4], [3.9, 2.9, 2.9]], middle: [[0, 2.2, 5.2], [-2.6, -2.8, 3.2], [2, -3, 2.2]],
+    plan: [[-3, -2.4, 2.6], [2.6, 1.8, 3.8]], junior: [[0, -2, 4.4], [0, 1.4, 2.4], [3.9, 2.9, 2.9]], middle: [[0, 2.75, 5.6], [-2.6, -2.8, 3.2], [2, -3, 2.2]],
     senior: [[0, -1.2, 3.8], [-1, 4.3, 3.8], [1.8, 4.2, 2.2]], harbor: [[-3.3, -2.8, 2.8], [1, -3, 2.8], [4.1, -1.2, 1.5], [5, 5, 3]],
   };
   Object.values(isles).forEach((I, n) => {

@@ -166,7 +166,7 @@ if (window.WebGLRenderingContext) {{
     </div>
 {sections}
     <footer class="isl-foot">
-      <p>中山大學應用數學系人才培育班導覽。{esc(M.INFO_DATE)}。</p>
+      <p>中山大學南部高中數學人才培育班導覽。{esc(M.INFO_DATE)}。</p>
       <p>{esc(M.DISCLAIMER)}</p>
     </footer>
   </nav>
